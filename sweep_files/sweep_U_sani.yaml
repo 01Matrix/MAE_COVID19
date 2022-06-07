@@ -1,0 +1,71 @@
+entity: bluedynamic
+method: grid
+name: sweep_U_sani
+metric:
+  name: val_loss
+parameters:
+  batch_size:
+    value: 16
+  blr:
+    value: 0.007314
+  cutmix:
+    value: 0.1769
+  drop_path:
+    value: 0.3759
+  finetune:
+    values: 
+    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_SI_orig_8.5:1:0.5_mae_pretrain_vit_base.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/SI_orig_8.5:1:0.5_mae_pretrain_vit_base.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_finetuned_vit_base.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_finetuned_vit_large.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_large.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_imagenet1k_c_covid_sl_400.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_MAE_checkpoint_799.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C1000_MAE_checkpoint_799.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C1000_C_orig_MAE_checkpoint-799.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_model_resumed_pretrain_from_mae_pretrain_vit_base.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_model_resumed_pretrain_from_mae_pretrain_vit_base_freeze200.pth
+  layer_decay:
+    value: 0.7427
+  mixup:
+    value: 0.6601
+  reprob:
+    value: 0.5334
+  seed:
+    value: 42
+  block_list:
+    values:
+    - ''
+    - '11'
+    - '10,11'
+    - '9,10,11'
+    - '8,9,10,11'
+    - '7,8,9,10,11'
+    - '1,3,5,7,9,11'
+    - '6,7,8,9,10,11'
+    - '5,6,7,8,9,10,11'
+    - '4,5,6,7,8,9,10,11'
+    - '3,4,5,6,7,8,9,10,11'
+    - '2,3,4,5,6,7,8,9,10,11'
+    - '1,2,3,4,5,6,7,8,9,10,11'
+    - '0,1,2,3,4,5,6,7,8,9,10,11'
+    - '0,1,2,3,4,5,6,7,8,9,10'
+    - '0,1,2,3,4,5,6,7,8,9'
+    - '0,1,2,3,4,5,6,7,8'
+    - '0,1,2,3,4,5,6,7'
+    - '0,1,2,3,4,5,6'
+    - '0,2,4,6,8,10'
+    - '0,1,2,3,4,5'
+    - '0,1,2,3,4'
+    - '0,1,2,3'
+    - '0,1,2'
+    - '0,1'
+    - '0'
+  weight_decay:
+    value: 0.5558
+  tar:
+    value: U_sani
+program: main_finetune_txt_ddp.py
+project: MAE_COVID19

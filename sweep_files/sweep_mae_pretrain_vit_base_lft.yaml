@@ -1,0 +1,68 @@
+entity: bluedynamic
+method: grid
+name: mae_pretrain_vit_base_lft
+parameters:
+  tar:
+    value: U_sani2
+  batch_size:
+    value: 16
+  blr:
+    value: 0.0005
+  layer_decay:
+    value: 0.65
+  weight_decay:
+    value: 0.05
+  drop_path:
+    value: 0.1
+  reprob:
+    value: 0.25
+  mixup:
+    value: 0.8
+  cutmix:
+    value: 1.0
+  seed:
+    value: 42
+  finetune:
+    values:
+    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
+    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_large.pth
+  block_list:
+    values:
+    - ''
+    - '11'
+    - '10,11'
+    - '9,10,11'
+    - '8,9,10,11'
+    - '7,8,9,10,11'
+    - '6,7,8,9,10,11'
+    - '5,6,7,8,9,10,11'
+    - '4,5,6,7,8,9,10,11'
+    - '3,4,5,6,7,8,9,10,11'
+    - '2,3,4,5,6,7,8,9,10,11'
+    - '1,2,3,4,5,6,7,8,9,10,11'
+    - '0,1,2,3,4,5,6,7,8,9,10,11'
+    - '0,1,2,3,4,5,6,7,8,9,10'
+    - '0,1,2,3,4,5,6,7,8,9'
+    - '0,1,2,3,4,5,6,7,8'
+    - '0,1,2,3,4,5,6,7'
+    - '0,1,2,3,4,5,6'
+    - '0,1,2,3,4,5'
+    - '0,1,2,3,4'
+    - '0,1,2,3'
+    - '0,1,2'
+    - '0,1'
+    - '0'
+    - '1,3,5,7,9,11'
+    - '0,2,4,6,8,10'
+  fft:
+    value: false
+  attn:
+    values: 
+    - false
+    - true
+  mlp:
+    values: 
+    - false
+    - true
+program: main_finetune_txt_ddp.py
+project: MAE_COVID19_2
