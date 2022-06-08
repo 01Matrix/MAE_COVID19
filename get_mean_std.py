@@ -33,26 +33,25 @@ def getStat(train_data):
 
 
 def load_pretrain(args,transform):
-    dataset_name = {'C_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/COVIDX_CT_2A/C_orig',
-                    'C_sani':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/COVIDX_CT_2A/C_sani',
-                    'C_sani2':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/COVIDX_CT_2A/C_sani2',
+    dataset_name = {
+                    'CHE':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/chest-ct-scans-with-COVID-19/nii2png',
+                    'CCT':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID-19_ct_scans1/ct_scans',
+                    'C1920':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID-19-20_v2/data',
+                    'CAR':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID-19-AR',
+                    'CCS':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-19-CT-segmentation-dataset',
+                    'C1000':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID19-CT-Dataset1000+/data',
+                    'CIC':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/CT_Images_in_COVID-19/nii2png',
+                    'MRA':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/MIDRC-RICORD-1A',
+                    'MRB':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/MIDRC-RICORD-1B',
+                    'S_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/sarscov2_ctscan_dataset',
+                    'SIRM':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/SIRM-COVID-19',
+                    # 'CD_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-nonCT/COVID_DA_Xray',
+                    # 'CQ_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-nonCT/COVID_QU_Ex_Dataset_Xray',
+                    'C_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/COVIDX_CT_2A/C_orig',
                     'L_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/large_COVID_19_ct_slice_dataset/curated_data/L_orig',
-                    'L_sani':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/large_COVID_19_ct_slice_dataset/curated_data/L_sani',
-                    'L_sani2':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/large_COVID_19_ct_slice_dataset/curated_data/L_sani2',
-                    'U_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_orig',
-                    'U_sani':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_sani',
-                    'U_sani2':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_sani2',
                     'CC_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/COVID_19_and_common_pneumonia_chest_CT_dataset/CC_orig',
-                    'CC_sani':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/COVID_19_and_common_pneumonia_chest_CT_dataset/CC_sani',
-                    'CC_sani2':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/COVID_19_and_common_pneumonia_chest_CT_dataset/CC_sani2',
-                    'SI_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/siim_covid19_detection_xray/SI_orig',
-                    'SI_sani':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/siim_covid19_detection_xray/SI_sani',
-                    'C_SI_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/C_SI_orig',
-                    'S_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/sarscov2_ctscan_dataset',
-                    'C1000':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID19-CT-Dataset1000+',
-                    'CD_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-nonCT/COVID_DA_Xray',
-                    'CQ_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-nonCT/COVID_QU_Ex_Dataset_Xray'
-               }
+                    'SI_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/siim_covid19_detection_xray/SI_orig'
+                }
     transform_dict = {
         'train': transform,
         }
@@ -132,4 +131,7 @@ if __name__ == '__main__':
     CC_sani2:([0.4812714, 0.4812714, 0.4812714], [0.29716596, 0.29716596, 0.29716596])
     
     C_orig+CC_orig: ([0.48062998, 0.48062977, 0.48062965], [0.3250353, 0.3250346, 0.32503396])
+    
+    CHE CCT C1920 CAR CCS C1000 CIC MRA MRB S_orig SIRM C_orig L_orig CC_orig:([0.43022805, 0.43022785, 0.43022805], [0.31628063, 0.31627995, 0.31628016])
     '''
+

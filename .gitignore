@@ -2,3 +2,4 @@ output*
 test_list
 wandb
 __pycache__
+.vscode
