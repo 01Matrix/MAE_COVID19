@@ -236,7 +236,7 @@ def layerwise_ft(flag_attn,flag_mlp,model):
                 p.requires_grad = True
             if 'fc_norm' in n:
                 p.requires_grad = True
-    if not flag_attn and not flag_mlp:
+    if not flag_attn and not flag_mlp: #接近于linear probe,但是和LP不同的是fc_norm层是unfreeze的
         print('Not Finetune attention and MLP layer, just finetune head, and freeze other layers.')
         for n, p in model.named_parameters():
             p.requires_grad = False
@@ -367,7 +367,7 @@ def main(args):
         # pretrain_model_path = '/sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/'
         checkpoint = torch.load(args.finetune, map_location='cpu')
         print("Load pretrained checkpoint from: %s" % args.finetune)
-        if 'C_model_resumed_pretrain' in args.finetune or 'MAE_checkpoint_799' in args.finetune or 'C_orig_CC_orig_pretrain/checkpoint-2199.pth' in args.finetune:
+        if 'C_model_resumed_pretrain' in args.finetune or 'MAE_checkpoint_799' in args.finetune or 'C_orig_CC_orig_pretrain/checkpoint-2199.pth' in args.finetune or 'CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-300.pth' in args.finetune:
             print('This is our own pretrained model.')
             checkpoint_model = {k:v for k, v in checkpoint['model'].items() if 'decoder_' not in k and 'mask_token' not in k}  #自己pretrain的model里面包含decoder部分和mask_token，需要删掉,
                                                                                                     #且包含norm.weight/norm.bias，经过finetune会被换成fc_norm.weight/fc_norm.bias,并加上head.weight/head.bias

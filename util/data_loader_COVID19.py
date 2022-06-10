@@ -207,7 +207,7 @@ def load_pretrain(args, transform):
                     'CCT':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID-19_ct_scans1/ct_scans',
                     'C1920':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID-19-20_v2/data',
                     'CAR':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID-19-AR',
-                    'CCS':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-19-CT-segmentation-dataset',
+                    'CCS':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID-19-CT-segmentation-dataset',
                     'C1000':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID19-CT-Dataset1000+/data',
                     'CIC':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/CT_Images_in_COVID-19/nii2png',
                     'MRA':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/MIDRC-RICORD-1A',

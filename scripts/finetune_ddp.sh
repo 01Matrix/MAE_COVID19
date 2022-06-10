@@ -39,4 +39,4 @@ python main_finetune_txt_ddp.py \
  
 chmod -R 777 /sharefs/baaihealth/xiaohongwang/hxiao/codes/MAE_COVID19
 
-python main_finetune_txt_ddp.py --batch_size 16 --finetune /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth --blr 5e-4 --layer_decay 0.65 --weight_decay 0.05 --drop_path 0.1 --reprob 0.25 --mixup 0.8 --cutmix 1.0 --fft true
+rlaunch --cpu=4 --gpu=1 --memory=8000 -- python main_finetune_txt_ddp.py --batch_size 16 --finetune /sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain/CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-300.pth --blr 5e-4 --layer_decay 0.65 --weight_decay 0.05 --drop_path 0.1 --reprob 0.25 --mixup 0.8 --cutmix 1.0 --fft true
