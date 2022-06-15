@@ -3,7 +3,7 @@ method: bayes
 metric: # 衡量目标
   goal: maximize
   name: test_acc
-name: sweep_all_MAE_checkpoint_420_530_fft_bayes
+name: sweep_all_MAE_checkpoint_420_530_710_fft_bayes
 parameters:
   tar:
     value: C_sani2
