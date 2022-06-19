@@ -141,10 +141,10 @@ def main(args):
     dataset_train = data_loader_COVID19.load_pretrain(args, transform_train)
     print(len(dataset_train))
 
-    global_rank = 0
     if True:  # args.distributed:
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
+        print('**************',global_rank)
         sampler_train = torch.utils.data.DistributedSampler(
             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
         )
@@ -236,8 +236,8 @@ def main(args):
         log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
                         'epoch': epoch,}
 
-        # wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
-        # wandb.log({"train_lr": train_stats['lr'],"epoch": epoch})
+        wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
+        wandb.log({"train_lr": train_stats['lr'],"epoch": epoch})
 
         if args.output_dir:
             if log_writer is not None:
@@ -253,7 +253,9 @@ def main(args):
 if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
-    # wandb.init(config = args, project="MAE_COVID19_pretrain", entity="bluedynamic")
+    # os.environ["WANDB_RUN_GROUP"] = "experiment-" + wandb.util.generate_id()
+    # group_id = os.environ["WANDB_RUN_GROUP"]
+    wandb.init(config = args, project="MAE_COVID19_pretrain", entity="bluedynamic", dir='/sharefs/baaihealth/xiaohongwang/MAE_COVID19', group="DDP",job_type="pretrain")
     if args.output_dir:
         args.save_dir= '_'.join(args.dataset) + '_pretrain'
         Path(args.output_dir,args.save_dir).mkdir(parents=True, exist_ok=True)
