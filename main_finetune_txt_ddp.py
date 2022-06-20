@@ -357,6 +357,9 @@ def main(args):
     if 'vit_large' in os.path.basename(args.finetune):
         args.model = 'vit_large_patch16'
 
+    if 'vit_huge' in os.path.basename(args.finetune):
+        args.model = 'vit_huge_patch14'
+
     model = models_vit.__dict__[args.model](
         num_classes=args.nb_classes,
         drop_path_rate=args.drop_path,
