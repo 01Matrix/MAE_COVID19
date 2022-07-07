@@ -37,12 +37,19 @@ import util.misc as misc
 from util.pos_embed import interpolate_pos_embed
 from util.misc import NativeScalerWithGradNormCount as NativeScaler
 import models_vit
-from engine_finetune import train_one_epoch, evaluate
+from engine_finetune_prompt import train_one_epoch, evaluate
 # import fastfood
+import prompters
 
 
 def get_args_parser():
     parser = argparse.ArgumentParser('MAE fine-tuning for image classification', add_help=False)
+    
+    parser.add_argument('--method', type=str, default='padding',
+                        choices=['padding', 'random_patch', 'fixed_patch'],
+                        help='choose visual prompting method')
+    parser.add_argument('--prompt_size', type=int, default=30,
+                        help='size for visual prompts')
     
     parser.add_argument('--batch_size', default=16, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * accum_iter * # gpus')
@@ -442,6 +449,10 @@ def main(args):
 
     model.to(device)
 
+    # visual prompt
+    prompter = prompters.__dict__[args.method](args).to(device)
+    prompter.load_state_dict(checkpoint_model, strict=False)
+    
 
     model_without_ddp = model
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -501,7 +512,7 @@ def main(args):
    
     if args.test:
         print('#'*20)
-        test_stats = evaluate('test',data_loader_test, model, device)
+        test_stats = evaluate('test',data_loader_test, model,prompter, device)
         print(f"Accuracy of the network on the {len(dataset_test)} test images: {test_stats['acc']:.4f}")
         log_stats = {**{f'test_{k}': v for k, v in test_stats.items()}}
         print(log_stats)
@@ -521,7 +532,7 @@ def main(args):
         # if args.distributed:
         #     data_loader_train.sampler.set_epoch(epoch)
         train_stats = train_one_epoch(
-            model, criterion, data_loader_train,
+            model, prompter, criterion, data_loader_train,
             optimizer, device, epoch, loss_scaler,
             args.clip_grad, mixup_fn,
             log_writer=log_writer,
@@ -532,7 +543,7 @@ def main(args):
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
 
-        val_stats = evaluate('val',data_loader_val, model, device)
+        val_stats = evaluate('val',data_loader_val, model,prompter,device)
 
         print(f"Number of val images: {len(dataset_val)}")
         # max_accuracy = max(max_accuracy, test_stats["acc1"])
@@ -584,7 +595,7 @@ def main(args):
     print('Training completed in {} \n'.format(total_time_str))
 
     print(f"Number of test images: {len(dataset_test)}")
-    test_stats = evaluate('test', data_loader_test, model_best, device)
+    test_stats = evaluate('test', data_loader_test, model_best,prompter, device)
     test_log_stats = {**{f'test_{k}': v for k, v in test_stats.items()},
                     'Total epoch': epoch,
                     'Best epoch': best_epoch,
