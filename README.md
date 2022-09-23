@@ -28,7 +28,7 @@ This is done on top of PyTorch/GPU re-implementation of the paper [Masked Autoen
 
 MAE visualization:
 <p align="center">
-  <img src="/sharefs/baaihealth/xiaohongwang/MAE_COVID19/C14_pretrain_model.png" width="600">
+  <img src="/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/demo/result.png" width="600">
 </p>
 
 ### Fine-tuning with pre-trained checkpoints
