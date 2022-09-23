@@ -1,11 +1,11 @@
-## Masked Autoencoders: A PyTorch Implementation
+## MAE fine-tuning for Few-sample COVID-19 Detection
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/11435359/146857310-f258c86c-fde6-48e8-9cee-badd2b21bd2c.png" width="480">
 </p>
 
 
-This is a PyTorch/GPU re-implementation of the paper [Masked Autoencoders Are Scalable Vision Learners](https://arxiv.org/abs/2111.06377):
+This is done on top of PyTorch/GPU re-implementation of the paper [Masked Autoencoders Are Scalable Vision Learners](https://arxiv.org/abs/2111.06377):
 ```
 @Article{MaskedAutoencoders2021,
   author  = {Kaiming He and Xinlei Chen and Saining Xie and Yanghao Li and Piotr Doll{\'a}r and Ross Girshick},
@@ -15,11 +15,8 @@ This is a PyTorch/GPU re-implementation of the paper [Masked Autoencoders Are Sc
 }
 ```
 
-* The original implementation was in TensorFlow+TPU. This re-implementation is in PyTorch+GPU.
-
-* This repo is a modification on the [DeiT repo](https://github.com/facebookresearch/deit). Installation and preparation follow that repo.
-
-* This repo is based on [`timm==0.3.2`](https://github.com/rwightman/pytorch-image-models), for which a [fix](https://github.com/rwightman/pytorch-image-models/issues/420#issuecomment-776459842) is needed to work with PyTorch 1.8.1+.
+* 111
+* 111
 
 ### Catalog
 
@@ -29,9 +26,9 @@ This is a PyTorch/GPU re-implementation of the paper [Masked Autoencoders Are Sc
 
 ### Visualization demo
 
-Run our interactive visualization demo using [Colab notebook](https://colab.research.google.com/github/facebookresearch/mae/blob/main/demo/mae_visualize.ipynb) (no GPU needed):
+MAE visualization:
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/11435359/147859292-77341c70-2ed8-4703-b153-f505dcb6f2f8.png" width="600">
+  <img src="/sharefs/baaihealth/xiaohongwang/MAE_COVID19/C14_pretrain_model.png" width="600">
 </p>
 
 ### Fine-tuning with pre-trained checkpoints
