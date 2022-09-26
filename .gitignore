@@ -3,3 +3,4 @@ test_list
 wandb
 __pycache__
 .vscode
+scripts/general_image_aug.py

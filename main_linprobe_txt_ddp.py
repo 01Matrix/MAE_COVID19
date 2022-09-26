@@ -22,7 +22,8 @@ import torch.backends.cudnn as cudnn
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-
+import random
+import wandb
 import timm
 
 # assert timm.__version__ == "0.3.2" # version check
@@ -45,7 +46,7 @@ def get_args_parser():
     parser.add_argument('--batch_size', default=512, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * accum_iter * # gpus')
     parser.add_argument('--epochs', default=1000, type=int)
-    parser.add_argument('--early_stop', type=int, default=100)
+    parser.add_argument('--early_stop', type=int, default=20)
     parser.add_argument('--accum_iter', default=1, type=int,
                         help='Accumulate gradient iterations (for increasing the effective batch size under memory constraints)')
 
@@ -73,31 +74,35 @@ def get_args_parser():
                         help='finetune from checkpoint')
     parser.add_argument('--global_pool', action='store_true')
     parser.set_defaults(global_pool=True)
-    parser.add_argument('--cls_token', action='store_false', dest='global_pool',
+    parser.add_argument('--cls_token', type=str2bool, default=False,
                         help='Use class token instead of global pool for classification')
+    # parser.add_argument('--cls_token', action='store_false', dest='global_pool',
+    #                     help='Use class token instead of global pool for classification')
 
     # Dataset parameters
     parser.add_argument('--data_path', default='', type=str,
                         help='dataset path')
-    parser.add_argument('--split_ratio',default='[8:1:1]',type=str,help=' Split dataset to train:val:test')
-    parser.add_argument('--tar', type=str, default='C_orig', help='finetune data')
+    parser.add_argument('--split_ratio',default='2:3:5',type=str,help=' Split dataset to train:val:test')
+    parser.add_argument('--tar', type=str, default='U_orig', help='finetune data')
 
     parser.add_argument('--nb_classes', default=2, type=int,
                         help='number of the classification types')
 
-    parser.add_argument('--output_dir', default='/mnt/sfs_turbo/hxiao/codes/mae_covid_ct/output_linprobe',
+    parser.add_argument('--output_dir', default='/sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_linprobe',
                         help='path where to save, empty for no saving')
     parser.add_argument('--log_dir', default='',
                         help='path where to tensorboard log')
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
-    parser.add_argument('--seed', default=0, type=int)
+    parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--resume', default='',
                         help='resume from checkpoint')
 
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                         help='start epoch')
-    parser.add_argument('--eval', action='store_true',
+    # parser.add_argument('--eval', action='store_true',
+                        # help='Perform evaluation only')
+    parser.add_argument('--test', action='store_true',
                         help='Perform evaluation only')
     parser.add_argument('--dist_eval', action='store_true', default=False,
                         help='Enabling distributed evaluation (recommended during training for faster monitor')
@@ -117,8 +122,38 @@ def get_args_parser():
 
     return parser
 
+def str2bool(v):
+    if isinstance(v, bool):
+        print('str2bool')
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+def set_seed(seed):
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    # torch.use_deterministic_algorithms(True) #这句话相当于自检，只要使用了不可复现的运算操作，代码就会自动报错。
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+        cudnn.deterministic = True
+        cudnn.benchmark = False
+
+GLOBAL_SEED =1 
+GLOBAL_WORKER_ID = None
+def worker_init_fn(worker_id):
+    global GLOBAL_WORKER_ID
+    GLOBAL_WORKER_ID = worker_id
+    set_seed(GLOBAL_SEED + worker_id)
 
 def main(args):
+    
+    
     misc.init_distributed_mode(args)
 
     print('job dir: {}'.format(os.path.dirname(os.path.realpath(__file__))))
@@ -126,47 +161,21 @@ def main(args):
 
     device = torch.device(args.device)
 
-    # fix the seed for reproducibility
-    seed = args.seed + misc.get_rank()
-    torch.manual_seed(seed)
-    np.random.seed(seed)
+    set_seed(args.seed)
+    # # fix the seed for reproducibility
+    # seed = args.seed + misc.get_rank()
+    # torch.manual_seed(seed)
+    # np.random.seed(seed)
 
-    cudnn.benchmark = True
+    # cudnn.benchmark = True
 
-    dataset_name = {'C_orig':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/COVIDX_CT_2A/train',
-                    'C_sani':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/COVIDX_CT_2A/C_sani',
-                    'L_orig':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/large_COVID_19_ct_slice_dataset/curated_data/L_orig',
-                    'L_sani':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/large_COVID_19_ct_slice_dataset/curated_data/L_sani',
-                    'U_orig':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_orig',
-                    'U_sani':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_sani',
-                    'CC_orig':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/COVID_19_and_common_pneumonia_chest_CT_dataset/CC_orig',
-                    'CC_sani':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/COVID_19_and_common_pneumonia_chest_CT_dataset/CC_sani',
-                    'C_SI_orig':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/C_SI_orig',
-                    'S_orig':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/sarscov2_ctscan_dataset',
-                    'SI_orig':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/siim_covid19_detection_xray/SI_orig',
-                    'SI_sani':'/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/siim_covid19_detection_xray/SI_sani',
-                    'CD_orig':'/mnt/sfs_turbo/public_medical_images/datasets/selected4pretrain/COVID-nonCT/COVID_DA_Xray',
-                    'CQ_orig':'/mnt/sfs_turbo/public_medical_images/datasets/selected4pretrain/COVID-nonCT/COVID_QU_Ex_Dataset_Xray'
-               }
-
-    transform_train = transforms.Compose([
-            RandomResizedCrop(224, interpolation=3),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
-    transform_val = transforms.Compose([
-            transforms.Resize(256, interpolation=3),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
-    dataset_path = {'tar_path': dataset_name[args.tar]}
-    dataset_train,dataset_val,dataset_test = data_loader_COVID19.load_linprobe(args,dataset_path['tar_path'])
+    dataset_train,dataset_val,dataset_test = data_loader_COVID19.load_linprobe(args)
     # dataset_train = datasets.ImageFolder(os.path.join(args.data_path, 'train'), transform=transform_train)
     # dataset_val = datasets.ImageFolder(os.path.join(args.data_path, 'val'), transform=transform_val)
     # print(dataset_train)
     # print(dataset_val)
 
-    if True:  # args.distributed:
+    if False:  # args.distributed:
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
         sampler_train = torch.utils.data.DistributedSampler(
@@ -185,13 +194,16 @@ def main(args):
         else:
             sampler_val = torch.utils.data.SequentialSampler(dataset_val)
             sampler_test = torch.utils.data.SequentialSampler(dataset_test)
+
     else:
         sampler_train = torch.utils.data.RandomSampler(dataset_train)
         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+        sampler_test = torch.utils.data.SequentialSampler(dataset_test)
 
-    if global_rank == 0 and args.log_dir is not None and not args.eval:
+    # if global_rank == 0 and args.log_dir is not None and not args.eval:
+    if not args.test:
         # os.makedirs(args.log_dir, exist_ok=True)
-        log_writer = SummaryWriter(log_dir=os.path.join(args.output_dir,save_dir))
+        log_writer = SummaryWriter(log_dir=os.path.join(args.output_dir,args.save_dir))
     else:
         log_writer = None
 
@@ -201,6 +213,7 @@ def main(args):
         num_workers=args.num_workers,
         pin_memory=args.pin_mem,
         drop_last=True,
+        worker_init_fn=worker_init_fn
     )
 
     data_loader_val = torch.utils.data.DataLoader(
@@ -208,7 +221,8 @@ def main(args):
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=args.pin_mem,
-        drop_last=False
+        drop_last=False,
+        worker_init_fn=worker_init_fn
     )
 
     data_loader_test = torch.utils.data.DataLoader(
@@ -216,24 +230,51 @@ def main(args):
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=args.pin_mem,
-        drop_last=False
+        drop_last=False,
+        worker_init_fn=worker_init_fn
     )
+
+    if 'vit_large' in os.path.basename(args.finetune) or 'large' in args.finetune:
+        args.model = 'vit_large_patch16'
+
+    if 'vit_huge' in os.path.basename(args.finetune) or 'huge' in args.finetune:
+        args.model = 'vit_huge_patch14'
 
     model = models_vit.__dict__[args.model](
         num_classes=args.nb_classes,
         global_pool=args.global_pool,
     )
 
-    if args.finetune and not args.eval:
+    if args.finetune and not args.test:
         checkpoint = torch.load(args.finetune, map_location='cpu')
 
         print("Load pre-trained checkpoint from: %s" % args.finetune)
-        checkpoint_model = checkpoint['model']
-        state_dict = model.state_dict()
-        for k in ['head.weight', 'head.bias']:
-            if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
-                print(f"Removing key {k} from pretrained checkpoint")
-                del checkpoint_model[k]
+        if 'C_model_resumed_pretrain' in args.finetune or 'MAE_checkpoint_799' in args.finetune or 'pretrain/checkpoint-' in args.finetune:
+            print('This is our own pretrained model.')
+            checkpoint_model = {k:v for k, v in checkpoint['model'].items() if 'decoder_' not in k and 'mask_token' not in k}  #自己pretrain的model里面包含decoder部分和mask_token，需要删掉,
+                                                                                                        #且包含norm.weight/norm.bias，经过finetune(global_pool=True)会被换成fc_norm.weight/fc_norm.bias,并加上head.weight/head.bias
+            state_dict = model.state_dict()
+            for k in ['head.weight', 'head.bias']:
+                if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
+                    print(f"Removing key {k} from pretrained checkpoint")
+                    del checkpoint_model[k]
+
+        elif os.path.basename(args.finetune) in ['mae_pretrain_vit_base.pth','mae_pretrain_vit_large.pth','mae_pretrain_vit_huge.pth']:
+            print('This is MAE official pretrained model.')
+            checkpoint_model = checkpoint['model']       
+            state_dict = model.state_dict()
+
+            for k in ['head.weight', 'head.bias']:
+                if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
+                    print(f"Removing key {k} from pretrained checkpoint")
+                    del checkpoint_model[k]
+        else:
+            print('This is (our own intermediate or MAE official) finetuned model.')
+            checkpoint_model = checkpoint['model']
+            for k in ['head.weight', 'head.bias','fc_norm.weight', 'fc_norm.bias']:
+                if k in checkpoint_model:
+                    print(f"Removing key {k} from (our own intermediate or MAE official) finetuned checkpoint.")
+                    del checkpoint_model[k]
 
         # interpolate position embedding
         interpolate_pos_embed(model, checkpoint_model)
@@ -245,7 +286,12 @@ def main(args):
         if args.global_pool:
             assert set(msg.missing_keys) == {'head.weight', 'head.bias', 'fc_norm.weight', 'fc_norm.bias'}
         else:
-            assert set(msg.missing_keys) == {'head.weight', 'head.bias'}
+            if os.path.basename(args.finetune) in ['C_orig_8:1:1_mae_pretrain_vit_base.pth','C_orig_8:1:1_mae_pretrain_vit_large.pth']:
+                print('@@@@@@@@@@@')
+                assert set(msg.missing_keys) == {'head.weight', 'head.bias', 'norm.weight', 'norm.bias'}
+            else:
+                print('!!!!!!!!!!!')
+                assert set(msg.missing_keys) == {'head.weight', 'head.bias'}
 
         # manually initialize fc layer: following MoCo v3
         trunc_normal_(model.head.weight, std=0.01)
@@ -253,6 +299,7 @@ def main(args):
     # for linear prob only
     # hack: revise model's head with BN
     model.head = torch.nn.Sequential(torch.nn.BatchNorm1d(model.head.in_features, affine=False, eps=1e-6), model.head)
+
     # freeze all but the head
     for _, p in model.named_parameters():
         p.requires_grad = False
@@ -292,9 +339,17 @@ def main(args):
 
     misc.load_model(args=args, model_without_ddp=model_without_ddp, optimizer=optimizer, loss_scaler=loss_scaler)
 
-    if args.eval:
-        val_stats = evaluate('val',data_loader_val, model, device)
-        print(f"Accuracy of the network on the {len(dataset_val)} val images: {val_stats['acc']:.4f}")
+    # if args.eval:
+    #     val_stats = evaluate('val',data_loader_val, model, device)
+    #     print(f"Accuracy of the network on the {len(dataset_val)} val images: {val_stats['acc']:.4f}")
+    #     exit(0)
+
+    if args.test:
+        print('#'*20)
+        test_stats = evaluate('test',data_loader_test, model, device)
+        print(f"Accuracy of the network on the {len(dataset_test)} test images: {test_stats['acc']:.4f}")
+        log_stats = {**{f'test_{k}': v for k, v in test_stats.items()}}
+        print(log_stats)
         exit(0)
 
     print(f"Start training for {args.epochs} epochs")
@@ -302,7 +357,7 @@ def main(args):
     max_accuracy = 0.0
     model_best = model
 
-    with open(os.path.join(args.output_dir, save_dir,"lin_probe_train_log.txt"), mode="a", encoding="utf-8") as f:
+    with open(os.path.join(args.output_dir, args.save_dir,"lin_probe_train_log.txt"), mode="a", encoding="utf-8") as f:
         f.write("\n" + 'lin_probe--' + 'finetune dataset:{}; finetune model:{}'.format(args.tar,args.finetune) + "\n")
     stop  =0
     for epoch in range(args.start_epoch, args.epochs):
@@ -347,9 +402,12 @@ def main(args):
             log_writer.add_scalar('perf/val_auc', val_stats['auc'], epoch)
             log_writer.add_scalar('perf/val_specificity', val_stats['specificity'], epoch)
             log_writer.add_scalar('perf/val_loss', val_stats['loss'], epoch)
-            
+        
+        wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
+        wandb.log({"val_loss": val_stats['loss'],"epoch": epoch})
+        wandb.log({"val_acc": val_stats['acc'],"epoch": epoch})
 
-        log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
+        train_log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
                         **{f'val_{k}': v for k, v in val_stats.items()},
                         'epoch': epoch,
                         'n_parameters': n_parameters}
@@ -357,8 +415,8 @@ def main(args):
         if args.output_dir and misc.is_main_process():
             if log_writer is not None:
                 log_writer.flush()
-            with open(os.path.join(args.output_dir,save_dir, "lin_probe_train_log.txt"), mode="a", encoding="utf-8") as f:
-                f.write(json.dumps(log_stats) + "\n")
+            with open(os.path.join(args.output_dir,args.save_dir, "lin_probe_train_log.txt"), mode="a", encoding="utf-8") as f:
+                f.write(json.dumps(train_log_stats) + "\n")
         if stop > args.early_stop:
             break
         
@@ -372,11 +430,19 @@ def main(args):
     test_log_stats = {**{f'test_{k}': v for k, v in test_stats.items()},
                     'Total epoch': epoch+1,
                     'Best epoch': best_epoch+1,
+                    'Best val_acc':  max_accuracy,
                     'Training time':total_time_str
                     }
     print(test_log_stats)
 
-    with open(os.path.join(args.output_dir, save_dir,"lin_probe_test_log.txt"), mode="a", encoding="utf-8") as f:
+    wandb.run.summary['test_acc'] = test_stats["acc"]
+    wandb.run.summary['test_loss'] = test_stats["loss"]
+    wandb.run.summary['test_f1'] = test_stats["f1"]
+    wandb.run.summary['test_auc'] = test_stats["auc"]
+    wandb.run.summary['CM(tn,fp,fn,tp)'] = test_stats["CM(tn,fp,fn,tp)"]
+    wandb.run.summary['Total_epoch'] = epoch
+
+    with open(os.path.join(args.output_dir, args.save_dir,"lin_probe_test_log.txt"), mode="a", encoding="utf-8") as f:
         f.write("\n" + 'lin_probe--'+ 'finetune dataset:{}; finetune model:{}'.format(args.tar,args.finetune) + "\n")
         f.write(json.dumps(test_log_stats) + "\n")
     
@@ -384,7 +450,32 @@ def main(args):
 if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
-    if args.output_dir:
-        save_dir= args.tar + '_' + args.split_ratio.strip('[]') + '_' + os.path.basename(args.finetune).split('.')[0]
-        Path(args.output_dir,save_dir).mkdir(parents=True, exist_ok=True)
+    args.global_pool = args.cls_token # False
+
+    # os.environ["WANDB_DIR"] = os.path.abspath("/sharefs/baaihealth/xiaohongwang/MAE_COVID19")
+    run = wandb.init(config = args, project="MAE_COVID19_2", entity="bluedynamic",dir='/sharefs/baaihealth/xiaohongwang/MAE_COVID19')
+    # api = wandb.Api()
+    # run_id = run.id
+    # run = api.run("bluedynamic/MAE_COVID19/{}".format(run_id))
+
+    if not args.finetune:
+        print('Train from scratch with ViT.')
+        args.tag = 'TFS'
+        run.tags = run.tags + ('TFS',)
+    else:
+        print('Perform linear probing.')
+        args.tag = 'LP'
+        run.tags = run.tags + ('LP',)
+     
+
+    if args.output_dir and not args.test:
+        if args.tag == 'TFS':
+            args.save_dir = os.path.join(args.split_ratio.strip(),'TFS_with_' + args.model, args.tar + '_seed' + str(args.seed) \
+                + '_bs' +str(args.batch_size) + '_b' +str(round(args.blr,5)) + '_l' +str(round(args.layer_decay,4)) + '_w' +str(round(args.weight_decay,4)) \
+                + '_d' +str(round(args.drop_path,4)) + '_r' +str(round(args.reprob,4)) + '_m' +str(round(args.mixup,4)) + '_c' +str(round(args.cutmix,4)) + '_bl' \
+                + '_'.join(args.block_list.split(',')) + '_fft' + str(args.fft) + '_attn' + str(args.attn) + '_mlp' + str(args.mlp) + '_' + args.tag)
+        else:
+            args.save_dir = os.path.join(args.split_ratio.strip(),'linprobe_with_'+os.path.basename(args.finetune).strip('.pth'), args.tar + '_seed' + str(args.seed) \
+                + '_bs' +str(args.batch_size) + '_b' +str(round(args.blr,5)) + '_' + args.tag)
+        Path(args.output_dir,args.save_dir).mkdir(parents=True, exist_ok=True)# parents：如果父目录不存在，是否创建父目录；exist:只有在目录不存在时创建目录，目录已存在时不会抛出异常。
     main(args)

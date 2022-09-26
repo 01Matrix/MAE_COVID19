@@ -31,25 +31,23 @@ from timm.models.layers import trunc_normal_
 from timm.data.mixup import Mixup
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 
+from util.samsgd import SAMSGD
+from composer.algorithms import SAM
 import util.lr_decay as lrd
-import util.misc as misc
+import util.misc_sam as misc_sam
 # from util.datasets import build_dataset, build_dataset_txt
 from util.pos_embed import interpolate_pos_embed
-from util.misc import NativeScalerWithGradNormCount as NativeScaler
+from util.misc_sam import NativeScalerWithGradNormCount as NativeScaler
 import models_vit
-from engine_finetune_prompt import train_one_epoch, evaluate
+from engine_finetune_sam import train_one_epoch, evaluate
 # import fastfood
-import prompters
 
 
 def get_args_parser():
     parser = argparse.ArgumentParser('MAE fine-tuning for image classification', add_help=False)
     
-    parser.add_argument('--method', type=str, default='padding',
-                        choices=['padding', 'random_patch', 'fixed_patch'],
-                        help='choose visual prompting method')
-    parser.add_argument('--prompt_size', type=int, default=30,
-                        help='size for visual prompts')
+    parser.add_argument("--adaptive", default=True, type=bool, help="True if you want to use the Adaptive SAM.")
+    parser.add_argument("--rho", default=2.0, type=float, help="Rho parameter for SAM.")
     
     parser.add_argument('--batch_size', default=16, type=int,
                         help='Batch size per GPU (effective batch size is batch_size * accum_iter * # gpus')
@@ -178,6 +176,8 @@ def get_args_parser():
     parser.add_argument('--fft',type=str2bool, default=False,help='It means Full-finetuning')
     parser.add_argument('--attn',type=str2bool, default=False,help='It means just finetune attention layer.')
     parser.add_argument('--mlp',type=str2bool, default=False,help='It means just finetune mlp layer')
+    parser.add_argument('--norm1',type=str2bool, default=False,help='It means just finetune norm1 layer')
+    parser.add_argument('--norm2',type=str2bool, default=False,help='It means just finetune norm2 layer')
     parser.add_argument('--bias',type=str2bool, default=False,help='It means just finetune mlp layer')
     # nargs=?，如果没有在命令行中出现对应的项，则给对应的项赋值为default。
     # 特殊的是，对于可选项，如果命令行中出现了此可选项，但是之后没有跟随赋值参数，则此时给此可选项并不是赋值default的值，而是赋值const的值。
@@ -212,8 +212,8 @@ def worker_init_fn(worker_id):
     GLOBAL_WORKER_ID = worker_id
     set_seed(GLOBAL_SEED + worker_id)
 
-# Layer-wise finetuning.
-def layerwise_ft(flag_attn,flag_mlp,flag_bias,model):
+# Partial finetuning.
+def partial_ft(flag_attn,flag_mlp,flag_bias,model):
     if not flag_attn and not flag_mlp and flag_bias:
         print('Just finetune bias layer and head.')
         for n, p in model.named_parameters():
@@ -222,10 +222,10 @@ def layerwise_ft(flag_attn,flag_mlp,flag_bias,model):
                 p.requires_grad = True
             if 'head' in n:
                 p.requires_grad = True
-            if 'fc_norm' in n:
+            if 'norm' in n:
                 p.requires_grad = True
         
-    if flag_attn and not flag_mlp:
+    if flag_attn and not flag_mlp and not flag_bias:
         print('Just finetune attention layer and head.')
         for n, p in model.named_parameters():
             p.requires_grad = False
@@ -235,7 +235,7 @@ def layerwise_ft(flag_attn,flag_mlp,flag_bias,model):
                 p.requires_grad = True
             if 'fc_norm' in n:
                 p.requires_grad = True
-    if not flag_attn and flag_mlp:
+    if not flag_attn and flag_mlp and not flag_bias:
         print('Just finetune MLP layer and head.')
         for n, p in model.named_parameters():
             p.requires_grad = False
@@ -245,7 +245,7 @@ def layerwise_ft(flag_attn,flag_mlp,flag_bias,model):
                 p.requires_grad = True
             if 'fc_norm' in n:
                 p.requires_grad = True
-    if flag_attn and flag_mlp:
+    if flag_attn and flag_mlp and not flag_bias:
         print('Finetune attention and MLP layer, and head.')
         for n, p in model.named_parameters():
             p.requires_grad = False
@@ -269,10 +269,6 @@ def layerwise_ft(flag_attn,flag_mlp,flag_bias,model):
 
 # Weight re_init 权重重新初始化
 def re_init_w(flag_attn,flag_mlp,flag_bias,model):
-    if flag_bias:
-        # trunc_normal_(model.patch_embed.proj.bias,std=2e-5)
-        trunc_normal_(model.fc_norm.bias,std=2e-5)
-        trunc_normal_(model.head.bias,std=2e-5)
     if args.block_list != '':
         for i in list(map(lambda x: int(x),args.block_list.split(','))): #对几个block的attention和mlp的权重进行重新初始化
             if flag_attn:
@@ -283,14 +279,17 @@ def re_init_w(flag_attn,flag_mlp,flag_bias,model):
                 print(f'Re-init weight of blocks[{i}].mlp')
                 trunc_normal_(model.blocks[i].mlp.fc1.weight,std=2e-5)
                 # trunc_normal_(model_without_ddp.blocks[i].mlp.fc2.weight,std=2e-5)
-            if flag_bias:
-                print(f'Re-init bias of patch_embed.proj and blocks[{i}]')
-                trunc_normal_(model.blocks[i].norm1.bias,std=2e-5)
-                trunc_normal_(model.blocks[i].attn.qkv.bias,std=2e-5)
-                trunc_normal_(model.blocks[i].attn.proj.bias,std=2e-5)
-                trunc_normal_(model.blocks[i].norm2.bias,std=2e-5)
-                trunc_normal_(model.blocks[i].mlp.fc1.bias,std=2e-5)
-                trunc_normal_(model.blocks[i].mlp.fc2.bias,std=2e-5)
+            # if flag_bias:
+            #     # trunc_normal_(model.patch_embed.proj.bias,std=2e-5)
+            #     trunc_normal_(model.fc_norm.bias,std=2e-5)
+            #     trunc_normal_(model.head.bias,std=2e-5)
+            #     print(f'Re-init bias of patch_embed.proj and blocks[{i}]')
+            #     trunc_normal_(model.blocks[i].norm1.bias,std=2e-5)
+            #     trunc_normal_(model.blocks[i].attn.qkv.bias,std=2e-5)
+            #     trunc_normal_(model.blocks[i].attn.proj.bias,std=2e-5)
+            #     trunc_normal_(model.blocks[i].norm2.bias,std=2e-5)
+            #     trunc_normal_(model.blocks[i].mlp.fc1.bias,std=2e-5)
+            #     trunc_normal_(model.blocks[i].mlp.fc2.bias,std=2e-5)
 
             # if not flag_attn and not flag_mlp:
             #     print('Not Re-init weight of blocks.')
@@ -299,7 +298,7 @@ def re_init_w(flag_attn,flag_mlp,flag_bias,model):
 
 def main(args):
     
-    # misc.init_distributed_mode(args)
+    # misc_sam.init_distributed_mode(args)
 
     print('job dir: {}'.format(os.path.dirname(os.path.realpath(__file__))))
     print("{}".format(args).replace(', ', ',\n'))
@@ -308,7 +307,7 @@ def main(args):
 
     set_seed(args.seed)
     # fix the seed for reproducibility
-    # seed = args.seed + misc.get_rank()
+    # seed = args.seed + misc_sam.get_rank()
     # torch.manual_seed(seed)
     # np.random.seed(seed)
     # cudnn.benchmark = True
@@ -318,8 +317,8 @@ def main(args):
 
     if False:  # args.distributed:
         print('distributed')
-        num_tasks = misc.get_world_size()
-        global_rank = misc.get_rank()
+        num_tasks = misc_sam.get_world_size()
+        global_rank = misc_sam.get_rank()
         sampler_train = torch.utils.data.DistributedSampler(
             dataset_train, num_replicas=num_tasks, rank=global_rank, seed=args.seed, shuffle=True
         )
@@ -449,18 +448,14 @@ def main(args):
 
     model.to(device)
 
-    # visual prompt
-    prompter = prompters.__dict__[args.method](args).to(device)
-    prompter.load_state_dict(checkpoint_model, strict=False)
-    
 
     model_without_ddp = model
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-    print("Model = %s" % str(model_without_ddp))
+    # print("Model = %s" % str(model_without_ddp))
     print('number of params (M): %.2f' % (n_parameters / 1.e6))
 
-    eff_batch_size = args.batch_size * args.accum_iter * misc.get_world_size()
+    eff_batch_size = args.batch_size * args.accum_iter * misc_sam.get_world_size()
     
     if args.lr is None:  # only base_lr is specified
         args.lr = args.blr * eff_batch_size / 256
@@ -477,8 +472,8 @@ def main(args):
 
     # 不是full-finetuning, 而是只finetune MLP层 or attention层
     if args.finetune and not args.fft:
-        print('Layer-wise finetuning.')
-        layerwise_ft(args.attn,args.mlp,args.bias,model_without_ddp)
+        print('Partial finetuning.')
+        partial_ft(args.attn,args.mlp,args.bias,model_without_ddp)
 
     # build optimizer with layer-wise lr decay (lrd)
     # if hasattr(model_without_ddp, 'no_weight_decay'):
@@ -489,7 +484,11 @@ def main(args):
     )
     # model_without_ddp = fastfood.FastfoodWrap(model_without_ddp,intrinsic_dimension=5000, device=0)
 
-    optimizer = torch.optim.AdamW(param_groups, lr=args.lr)
+    # base_optimizer = torch.optim.AdamW(param_groups,lr=args.lr)
+    # base_optimizer = torch.optim.SGD(param_groups,lr=args.lr)
+    # optimizer = SAM(base_optimizer)
+    # optimizer = SAM(param_groups, base_optimizer, rho=args.rho, adaptive=args.adaptive)
+    optimizer = SAMSGD(model.parameters(), lr=args.lr, rho=args.rho)
     loss_scaler = NativeScaler()
 
     if mixup_fn is not None:
@@ -502,7 +501,7 @@ def main(args):
 
     print("criterion = %s" % str(criterion))
 
-    misc.load_model(args=args, model_without_ddp=model_without_ddp, optimizer=optimizer, loss_scaler=loss_scaler)
+    misc_sam.load_model(args=args, model_without_ddp=model_without_ddp, optimizer=optimizer, loss_scaler=loss_scaler)
 
     # if args.eval:
     #     print('-'*20)
@@ -512,7 +511,7 @@ def main(args):
    
     if args.test:
         print('#'*20)
-        test_stats = evaluate('test',data_loader_test, model,prompter, device)
+        test_stats = evaluate('test',data_loader_test, model, device)
         print(f"Accuracy of the network on the {len(dataset_test)} test images: {test_stats['acc']:.4f}")
         log_stats = {**{f'test_{k}': v for k, v in test_stats.items()}}
         print(log_stats)
@@ -532,18 +531,18 @@ def main(args):
         # if args.distributed:
         #     data_loader_train.sampler.set_epoch(epoch)
         train_stats = train_one_epoch(
-            model, prompter, criterion, data_loader_train,
+            model, criterion, data_loader_train,
             optimizer, device, epoch, loss_scaler,
             args.clip_grad, mixup_fn,
             log_writer=log_writer,
             args=args
         )
         if args.output_dir and args.save_all and epoch % 50 == 0:
-            misc.save_model(
+            misc_sam.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
 
-        val_stats = evaluate('val',data_loader_val, model,prompter,device)
+        val_stats = evaluate('val',data_loader_val, model, device)
 
         print(f"Number of val images: {len(dataset_val)}")
         # max_accuracy = max(max_accuracy, test_stats["acc1"])
@@ -551,7 +550,7 @@ def main(args):
             stop = 0
             wandb.run.summary['best_val_acc'] = val_stats["acc"]
             max_accuracy = val_stats["acc"]
-            misc.save_model(
+            misc_sam.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch='best')
             model_best = model
@@ -581,7 +580,7 @@ def main(args):
                             'n_parameters': n_parameters
                             }
 
-        if args.output_dir and misc.is_main_process():
+        if args.output_dir and misc_sam.is_main_process():
             if log_writer is not None:
                 log_writer.flush()
             with open(os.path.join(args.output_dir, args.save_dir,"log.txt"), mode="a", encoding="utf-8") as f:
@@ -595,7 +594,7 @@ def main(args):
     print('Training completed in {} \n'.format(total_time_str))
 
     print(f"Number of test images: {len(dataset_test)}")
-    test_stats = evaluate('test', data_loader_test, model_best,prompter, device)
+    test_stats = evaluate('test', data_loader_test, model_best, device)
     test_log_stats = {**{f'test_{k}': v for k, v in test_stats.items()},
                     'Total epoch': epoch,
                     'Best epoch': best_epoch,
@@ -638,7 +637,7 @@ if __name__ == '__main__':
             # run.update()
 
         else:
-            print('Perform layer-wise finetuning.')
+            print('Perform partial(layer-wise) finetuning.')
             args.tag = 'LFT'
             run.tags = run.tags + ('LFT',)
             # run.config['finetune'] = os.path.basename(args.finetune)
@@ -734,7 +733,7 @@ if __name__ == '__main__':
 
     # 在以下几种情况中,head和fc_norm层均不冻结
     #1. args.fft==True: full fientuning（FFT）: 解冻所有层,除head外,其他层的权重不重新初始化（re-init weight）
-    #2. args.fft == False: 称之为layer-wise finetuning（LFT）,包含以下几种情况
+    #2. args.fft == False: 称之为 partial(layer-wise) finetuning（LFT）,包含以下几种情况
         #2.1 args.attn==True and args.mlp==False: 解冻attention层，head层和fc_norm层；除head外,对attn.qkv层选择是否re-init weight以及re-init哪一个block（with or w/o weight re-init）,
         #2.2 args.attn==False and args.mlp==True: 解冻mlp层，head层和fc_norm层；除head外,对mlp.fc1层选择是否re-init weight以及re-init哪一个block（with or w/o weight re-init）,
         #2.3 args.attn==True and args.mlp==True: 解冻attention层，mlp层，head层和fc_norm层；除head外,对attn.qkv层和mlp.fc1层选择是否re-init weight以及re-init哪一个block（with or w/o weight re-init）,
@@ -742,3 +741,12 @@ if __name__ == '__main__':
         # block_list是需要进行weight re-init的block的序号（vit_base是0-11,vit_large是0-23）
         # if args.block_list为空，上述的2.1/2.2/2.3中对应的re-init weight都不执行
     #3. args.bias=True, 只finetune bias层
+    #4. args.norm=True, 只finetune norm层
+
+    # 方案1:
+    # 1. Unsupervised pret-raining on unlabeled ImageNet using MAE
+    # 2. Unsupervised pre-training on unlabeled domain-specific medical images 
+    # 3. Supervised fine-tuning on labeled medical images
+    # 方案2:
+    # 1. Unsupervised pre-training on unlabeled and general medical images 
+    # 2. Supervised fine-tuning on labeled medical images

@@ -26,6 +26,7 @@ for run in runs:
         print('changing...')
         run.tags = run.tags + ['TFS']
         run.update()
+        
 
     # if run.config['block_list'] == "" or run.config['block_list'] == None:
         # print('changing...')

@@ -1,0 +1,63 @@
+entity: bluedynamic
+method: grid
+name: sweep_U_IN1K_mae_pretrain_vit_base_freeze
+parameters:
+  model: 
+    value: vit_base_patch16
+  tar:
+    values: 
+    - U_orig
+    - U_sani2
+  batch_size:
+    value: 16
+  blr:
+    values: 
+    # - 0.0005
+    - 0.005737758553279021
+  cutmix:
+    values: 
+    # - 1.0
+    - 0.2584471995886106
+  drop_path:
+    values: 
+    # - 0.1
+    - 0.042114352596889226
+  layer_decay:
+    values: 
+    # - 0.65
+    - 0.6580711101848411
+  mixup:
+    values: 
+    # - 0.8
+    - 0.04854982842434763
+  reprob:
+    values: 
+    # - 0.25
+    - 0.8839896860050943
+  weight_decay:
+    values:
+    # - 0.05
+    - 0.8349482232100475
+  seed:
+    value: 42
+  finetune:
+    values:
+    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
+  attn:
+    values: 
+    - false
+  mlp:
+    values: 
+    - false
+  bias:
+    values: 
+    - false
+  split_ratio:
+    values:
+    - '2:3:5'
+  reinit_blocks:
+    value: 0
+  frozen_blocks:
+    values: [0,1,2,3,4,5,6,7,8,9,10,11,12]
+program: main_finetune_txt_ddp.py
+project: MAE_COVID19_3

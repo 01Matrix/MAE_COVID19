@@ -223,9 +223,9 @@ def load_pretrain(args, transform):
                     'MRB':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/MIDRC-RICORD-1B',
                     'S_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/sarscov2_ctscan_dataset',
                     'SIRM':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/SIRM-COVID-19',
-                    'CXC':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVIDX_CT_2A/CXC/backup4ft',
-                        'C_sani':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVIDX_CT_2A/C_sani',
-                        'C_sani2':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVIDX_CT_2A/C_sani2',
+                    'CXC':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVIDX_CT_2A/CXC',
+                        'C_sani':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVIDX_CT_2A/CXC_sani',
+                        'C_sani2':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVIDX_CT_2A/CXC_sani2',
                     'L_orig':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/large_COVID_19_ct_slice_dataset/curated_data/L_orig',
                         'L_sani':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/large_COVID_19_ct_slice_dataset/curated_data/L_sani',
                         'L_sani2':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/large_COVID_19_ct_slice_dataset/curated_data/L_sani2',
@@ -238,7 +238,13 @@ def load_pretrain(args, transform):
                     'QUEX':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-nonCT/COVID_QU_Ex_Dataset_Xray',
                     'CCXD':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-nonCT/Coronahack-Chest-XRay-Dataset',
                     'MRC':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-nonCT/MIDRC-RICORD-1C',
-                    'CHEXD':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-nonCT/covid-chestxray-dataset'
+                    'CHEXD':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-nonCT/covid-chestxray-dataset',
+                    'CHAOSCT':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/Others-CT/CHAOS/',
+                    'DL':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/Others-CT/DeepLesion/Images_png',
+                    'KITS':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/Others-CT/kits21/kits21/data',
+                    'LIDC':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/Others-CT/LIDC-IDRI',
+                    'LITS':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/Others-CT/LiTS',
+                    'MMWHS':'/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/Others-CT/MM-WHS'
                 }
     transform_dict = {
         'train': transform,
@@ -255,4 +261,3 @@ def load_pretrain(args, transform):
     np.random.shuffle(train_list)
     trainset = CovidCTDataset(train_list,transform=transform_dict['train'])
     return trainset
-

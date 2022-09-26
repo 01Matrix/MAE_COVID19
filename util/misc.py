@@ -129,6 +129,8 @@ class MetricLogger(object):
         iter_time = SmoothedValue(fmt='{avg:.4f}')
         data_time = SmoothedValue(fmt='{avg:.4f}')
         space_fmt = ':' + str(len(str(len(iterable)))) + 'd'
+        print('space_fmt',space_fmt)
+        print('len(iterable)',len(iterable))
         log_msg = [
             header,
             '[{0' + space_fmt + '}/{1}]',
@@ -254,7 +256,7 @@ class NativeScalerWithGradNormCount:
     state_dict_key = "amp_scaler"
 
     def __init__(self):
-        self._scaler = torch.cuda.amp.GradScaler()
+        self._scaler = torch.cuda.amp.GradScaler() # automatic mixed precision
 
     def __call__(self, loss, optimizer, clip_grad=None, parameters=None, create_graph=False, update_grad=True):
         self._scaler.scale(loss).backward(create_graph=create_graph)
@@ -295,10 +297,6 @@ def get_grad_norm_(parameters, norm_type: float = 2.0) -> torch.Tensor:
 
 
 def save_model(args, epoch, model, model_without_ddp, optimizer, loss_scaler):
-    # if args.finetune:
-    #     save_dir= args.tar + '_' + args.split_ratio.strip('[]')+ '_' + os.path.basename(args.finetune).split('.')[0]
-    # else:
-    #     save_dir= args.tar + '_pretrain'
     output_dir = Path(args.output_dir,args.save_dir)
     epoch_name = str(epoch)
     if loss_scaler is not None:
@@ -327,14 +325,15 @@ def load_model(args, model_without_ddp, optimizer, loss_scaler):
             checkpoint = torch.load(args.resume, map_location='cpu')
         model_without_ddp.load_state_dict(checkpoint['model'], strict=False)
         print("Resume checkpoint %s" % args.resume)
-        if 'optimizer' in checkpoint and 'epoch' in checkpoint and not (hasattr(args, 'test') and args.test):
-            optimizer.load_state_dict(checkpoint['optimizer'])
-            args.start_epoch = checkpoint['epoch'] + 1
-            print('************resume start_epoch:',args.start_epoch)
-            print(checkpoint.keys())
-            if 'scaler' in checkpoint:
-                loss_scaler.load_state_dict(checkpoint['scaler'])
-            print("With optim & sched!")
+        if not args.tag == 'TFS':
+            if 'optimizer' in checkpoint and 'epoch' in checkpoint and not (hasattr(args, 'test') and args.test):
+                optimizer.load_state_dict(checkpoint['optimizer'])
+                args.start_epoch = checkpoint['epoch'] + 1
+                print('************resume start_epoch:',args.start_epoch)
+                print(checkpoint.keys())
+                if 'scaler' in checkpoint:
+                    loss_scaler.load_state_dict(checkpoint['scaler'])
+                print("With optim & sched!")
 
 
 def all_reduce_mean(x):
@@ -342,7 +341,8 @@ def all_reduce_mean(x):
     if world_size > 1:
         x_reduce = torch.tensor(x).cuda()
         dist.all_reduce(x_reduce)
-        x_reduce /= world_size
+        # x_reduce /= world_size
+        x_reduce = x_reduce / world_size
         return x_reduce.item()
     else:
         return x

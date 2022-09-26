@@ -1,0 +1,67 @@
+entity: bluedynamic
+method: grid
+name: sweep_U_orig_various_seeds3
+parameters:
+  tar:
+    values: 
+    - U_orig
+    # - U_sani2
+  batch_size:
+    value: 16
+  blr:
+    values: 
+    # - 0.0005
+    - 0.002963
+  cutmix:
+    values: 
+    # - 1.0
+    - 0.246381
+  drop_path:
+    values: 
+    # - 0.1
+    - 0.219700
+  layer_decay:
+    values: 
+    # - 0.65
+    - 0.737374
+  mixup:
+    values: 
+    # - 0.8
+    - 0.661480
+  reprob:
+    values: 
+    # - 0.25
+    - 0.316730
+  weight_decay:
+    values:
+    # - 0.05
+    - 0.069578
+  seed:
+    values: 
+    - 0
+    - 42
+    - 100
+    - 1000
+    - 1024
+    - 3407
+    - 10000
+    - 50000
+    - 100000
+    - 1000000
+  finetune:
+    values:
+    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth
+    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_large.pth
+  fft:
+    value: true
+  attn:
+    value: false
+  mlp:
+    value: false
+  split_ratio:
+    values:
+    # - '5.7:1.6:2.7'
+    # - '6.2:1.2:2.6'
+    - '2:3:5'
+program: main_finetune_txt_ddp.py
+project: MAE_COVID19_2
