@@ -130,7 +130,7 @@ class MetricLogger(object):
         data_time = SmoothedValue(fmt='{avg:.4f}')
         space_fmt = ':' + str(len(str(len(iterable)))) + 'd'
         print('space_fmt',space_fmt)
-        print('len(iterable)',len(iterable))
+        print('len(iterable)',len(iterable)) # total iteration
         log_msg = [
             header,
             '[{0' + space_fmt + '}/{1}]',
@@ -165,7 +165,6 @@ class MetricLogger(object):
             end = time.time()
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-        # import pdb;pdb.set_trace()
 
         print('{} Total time: {} ({:.4f} s / it)'.format(
             header, total_time_str, total_time / len(iterable)))

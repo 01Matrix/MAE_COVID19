@@ -139,12 +139,12 @@ def main(args):
             transforms.Normalize(mean=[0.4302, 0.4302, 0.4302], std=[0.3162, 0.3162, 0.3162])
             ])
     dataset_train = data_loader_COVID19.load_pretrain(args, transform_train)
-    print(len(dataset_train))
+    print('*Num of training samples',len(dataset_train))
 
     if True:  # args.distributed:
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
-        print('**************',global_rank)
+        print('*global_rank:',global_rank)
         sampler_train = torch.utils.data.DistributedSampler(
             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
         )
@@ -191,7 +191,7 @@ def main(args):
 
     if args.distributed:
         print('distributed')
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=False) #find_unused_parameters=True
         model_without_ddp = model.module
 
 
