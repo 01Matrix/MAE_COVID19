@@ -85,9 +85,9 @@ def get_args_parser():
                         help='dataset path')
     parser.add_argument('--dataset', type=str, nargs='+', help='finetune dataset list')
 
-    parser.add_argument('--output_dir', default='/sharefs/healthshare/xiaohongwang/MAE_COVID19/output_pretrain',
+    parser.add_argument('--output_dir', default='/sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain',
                         help='path where to save, empty for no saving')
-    parser.add_argument('--log_dir', default='/sharefs/healthshare/xiaohongwang/MAE_COVID19/output_pretrain',
+    parser.add_argument('--log_dir', default='/sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain',
                         help='path where to tensorboard log')
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
@@ -255,8 +255,8 @@ if __name__ == '__main__':
     args = args.parse_args()
     # os.environ["WANDB_RUN_GROUP"] = "experiment-" + wandb.util.generate_id()
     # group_id = os.environ["WANDB_RUN_GROUP"]
-    wandb.init(config = args, project="MAE_COVID19_pretrain_share", entity="bluedynamic", \
-            dir='/sharefs/healthshare/xiaohongwang/MAE_COVID19', group="DDP",job_type="pretrain", \
+    wandb.init(config = args, project="MAE_COVID19_pretrain", entity="bluedynamic", \
+            dir='/sharefs/baaihealth/xiaohongwang/MAE_COVID19', group="DDP",job_type="pretrain", \
             settings=wandb.Settings(start_method='fork'))
     if args.output_dir:
         args.save_dir= '_'.join(args.dataset) + '_pretrain'
