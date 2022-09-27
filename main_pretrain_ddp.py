@@ -29,7 +29,7 @@ import util.data_loader_COVID19 as data_loader_COVID19
 
 import timm
 
-# assert timm.__version__ == "0.3.2"  # version check
+assert timm.__version__ == "0.5.4"  # version check
 import timm.optim.optim_factory as optim_factory
 
 import util.misc as misc
@@ -258,7 +258,11 @@ if __name__ == '__main__':
     wandb.init(config = args, project="MAE_COVID19_pretrain_share", entity="bluedynamic", \
             dir='/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output', group="DDP",job_type="pretrain", \
             settings=wandb.Settings(start_method='fork'))
+    if args.model == 'mae_vit_base_patch16':
+        TAG = 'base'
+    elif args.model == 'mae_vit_large_patch16':
+        TAG = 'large'
     if args.output_dir:
-        args.save_dir= '_'.join(args.dataset) + '_pretrain'
+        args.save_dir= TAG + '_' + '_'.join(args.dataset) + '_pretrain'
         Path(args.output_dir,args.save_dir).mkdir(parents=True, exist_ok=True)
     main(args)
