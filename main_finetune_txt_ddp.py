@@ -135,7 +135,7 @@ def get_args_parser():
     parser.add_argument('--nb_classes', default=2, type=int,
                         help='number of the classification types')
 
-    parser.add_argument('--output_dir', default='/sharefs/baaihealth/xiaohongwang/MAE_COVID19',
+    parser.add_argument('--output_dir', default='/sharefs/baaihealth/xiaohongwang/MAE_COVID19_output',
                         help='path where to save, empty for no saving')
     parser.add_argument('--log_dir', default='',
                         help='path where to tensorboard log')
@@ -662,7 +662,7 @@ if __name__ == '__main__':
     args = args.parse_args()
 
     # os.environ["WANDB_DIR"] = os.path.abspath("/sharefs/baaihealth/xiaohongwang/MAE_COVID19")
-    run = wandb.init(config = args, project="MAE_COVID19_3", entity="bluedynamic",dir='/sharefs/baaihealth/xiaohongwang/MAE_COVID19',settings=wandb.Settings(start_method="fork"))
+    run = wandb.init(config = args, project="MAE_COVID19_3", entity="bluedynamic",dir='/sharefs/baaihealth/xiaohongwang/MAE_COVID19_output',settings=wandb.Settings(start_method="fork"))
     # api = wandb.Api()
     # run_id = run.id
     # run = api.run("bluedynamic/MAE_COVID19/{}".format(run_id))
