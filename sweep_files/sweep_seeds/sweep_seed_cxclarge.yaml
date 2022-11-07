@@ -1,14 +1,13 @@
 entity: bluedynamic
 method: grid
-name: sweep_U_C_orig_mae_pretrain_vit_base_bias_no_init
+name: sweep_seed_cxclarge
 parameters:
-  model: 
-    value: vit_base_patch16
   tar:
     values: 
     - U_orig
+    - U_sani2
   batch_size:
-    value: 8
+    value: 16
   blr:
     values: 
     # - 0.0005
@@ -38,34 +37,14 @@ parameters:
     # - 1.0
     - 0.2463813127293306
   seed:
-    value: 42
+    values: [0,1,2,3,4,5,6,7,8,9,10]
   finetune:
     values:
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth
-  fft:
-    value: false
-  attn:
-    value: false
-  mlp:
-    value: false
-  bias:
-    value: true
+    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_large.pth
   split_ratio:
     values:
-    - '4.9:0.1:5'
-  block_list:
-    values:
-    - '0'
-    - '1'
-    - '2'
-    - '3'
-    - '4'
-    - '5'
-    - '6'
-    - '7'
-    - '8'
-    - '9'
-    - '10'
-    - '11'
+    # - '5.7:1.6:2.7'
+    # - '6.2:1.2:2.6'
+    - '2:3:5'
 program: main_finetune_txt_ddp.py
-project: MAE_COVID19_2
+project: MAE_COVID19_3

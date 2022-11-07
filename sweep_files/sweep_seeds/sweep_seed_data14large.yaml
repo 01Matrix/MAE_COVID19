@@ -1,0 +1,50 @@
+entity: bluedynamic
+method: grid
+name: sweep_seed_data14large
+parameters:
+  tar:
+    values: 
+    - U_orig
+    - U_sani2
+  batch_size:
+    value: 16
+  blr:
+    values: 
+    # - 0.0005
+    - 0.005662050315933436
+  cutmix:
+    values: 
+    # - 1.0
+    - 0.48801002523621617
+  drop_path:
+    values: 
+    # - 0.1
+    - 0.03626496567656723
+  layer_decay:
+    values: 
+    # - 0.65
+    - 0.7540216457239383
+  mixup:
+    values: 
+    # - 0.8
+    - 0.555746159307895
+  reprob:
+    values: 
+    # - 0.25
+    - 0.05080341932073407
+  weight_decay:
+    values:
+    # - 0.05
+    - 0.4492555267595793
+  seed:
+    values: [0,1,2,3,4,5,6,7,8,9,10]
+  finetune:
+    values:
+    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/data14_mae_pretrain_vit_large.pth
+  split_ratio:
+    values:
+    # - '5.7:1.6:2.7'
+    # - '6.2:1.2:2.6'
+    - '2:3:5'
+program: main_finetune_txt_ddp.py
+project: MAE_COVID19_3

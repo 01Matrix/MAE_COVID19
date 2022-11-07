@@ -79,7 +79,8 @@ def get_args_parser():
                         help='epochs to warmup LR')
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='', type=str,help='dataset path')
+    parser.add_argument('--data_path', default='', type=str,
+                        help='dataset path')
     parser.add_argument('--dataset', type=str, nargs='+', help='pretrain dataset list')
 
     parser.add_argument('--output_dir', default='/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output/output_pretrain',
@@ -114,8 +115,6 @@ def get_args_parser():
                          'N processes per node, which has N GPUs. This is the '
                          'fastest way to use PyTorch for either single node or '
                          'multi node data parallel training')
-
-    parser.add_argument('--jobtype', default='', type=str,help='pretrain job type')
 
     return parser
 
@@ -249,16 +248,16 @@ def main(args):
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
-    
+
 
 if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
     # os.environ["WANDB_RUN_GROUP"] = "experiment-" + wandb.util.generate_id()
     # group_id = os.environ["WANDB_RUN_GROUP"]
-    os.environ["WANDB_DIR"] = os.path.abspath("/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output")
-    wandb.init(config = args, project="MAE_COVID19_pretrain_2", entity="bluedynamic", \
-            dir="/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output", group="DDP",job_type=f"{args.jobtype}", \
+    # os.environ["WANDB_DIR"] = os.path.abspath("/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output")
+    wandb.init(config = args, project="MAE_COVID19_pretrain_share_test", entity="bluedynamic", \
+            dir='/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output', group="DDP",job_type="pretrain", \
             settings=wandb.Settings(start_method='fork'))
     if args.model == 'mae_vit_base_patch16':
         TAG = 'base'

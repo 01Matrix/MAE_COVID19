@@ -217,6 +217,9 @@ def save_on_master(*args, **kwargs):
 
 
 def init_distributed_mode(args):
+    # print(os.environ['CUDA_VISIBLE_DEVICES'])
+    # print(int(os.environ.get("LOCAL_RANK", -1)))
+    # print(int(os.environ["RANK"]))
     if args.dist_on_itp:
         args.rank = int(os.environ['OMPI_COMM_WORLD_RANK'])
         args.world_size = int(os.environ['OMPI_COMM_WORLD_SIZE'])
@@ -227,6 +230,12 @@ def init_distributed_mode(args):
         os.environ['WORLD_SIZE'] = str(args.world_size)
         # ["RANK", "WORLD_SIZE", "MASTER_ADDR", "MASTER_PORT", "LOCAL_RANK"]
     elif 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
+        args.rank = int(os.environ["RANK"])
+        args.world_size = int(os.environ['WORLD_SIZE'])
+        if 'LOCAL_RANK' not in os.environ:
+            os.environ['LOCAL_RANK'] = str(args.local_rank)
+        args.gpu = int(os.environ['LOCAL_RANK'])
+    elif 'RLAUNCH_REPLICA_TOTAL' in os.environ and 'RLAUNCH_REPLICA' in os.environ:
         args.rank = int(os.environ["RANK"])
         args.world_size = int(os.environ['WORLD_SIZE'])
         args.gpu = int(os.environ['LOCAL_RANK'])
@@ -324,15 +333,14 @@ def load_model(args, model_without_ddp, optimizer, loss_scaler):
             checkpoint = torch.load(args.resume, map_location='cpu')
         model_without_ddp.load_state_dict(checkpoint['model'], strict=False)
         print("Resume checkpoint %s" % args.resume)
-        if not args.tag == 'TFS':
-            if 'optimizer' in checkpoint and 'epoch' in checkpoint and not (hasattr(args, 'test') and args.test):
-                optimizer.load_state_dict(checkpoint['optimizer'])
-                args.start_epoch = checkpoint['epoch'] + 1
-                print('************resume start_epoch:',args.start_epoch)
-                print(checkpoint.keys())
-                if 'scaler' in checkpoint:
-                    loss_scaler.load_state_dict(checkpoint['scaler'])
-                print("With optim & sched!")
+        if 'optimizer' in checkpoint and 'epoch' in checkpoint and not (hasattr(args, 'test') and args.test):
+            optimizer.load_state_dict(checkpoint['optimizer'])
+            args.start_epoch = checkpoint['epoch'] + 1
+            print('************resume start_epoch:',args.start_epoch)
+            print(checkpoint.keys())
+            if 'scaler' in checkpoint:
+                loss_scaler.load_state_dict(checkpoint['scaler'])
+            print("With optim & sched!")
 
 
 def all_reduce_mean(x):

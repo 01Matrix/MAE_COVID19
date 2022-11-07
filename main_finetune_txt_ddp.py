@@ -127,7 +127,7 @@ def get_args_parser():
 
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='', type=str,
+    parser.add_argument('--data_path', default='/share/project/public_medical_images/datasets', type=str,
                         help='dataset path')
     parser.add_argument('--split_ratio',default='2:3:5',type=str,help='Split dataset to train:val:test')
     parser.add_argument('--tar', type=str, default='U_orig', help='finetune data')
@@ -135,7 +135,7 @@ def get_args_parser():
     parser.add_argument('--nb_classes', default=2, type=int,
                         help='number of the classification types')
 
-    parser.add_argument('--output_dir', default='/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output',
+    parser.add_argument('--output_dir', default='/home/hwxiao/mycodes/MAE_COVID19/outputs',
                         help='path where to save, empty for no saving')
     parser.add_argument('--log_dir', default='',
                         help='path where to tensorboard log')
@@ -176,7 +176,8 @@ def get_args_parser():
     parser.add_argument('--attn',type=str2bool, default=False,help='It means just finetune attention layer.')
     parser.add_argument('--mlp',type=str2bool, default=False,help='It means just finetune mlp layer')
     parser.add_argument('--bias',type=str2bool, default=False,help='It means just finetune bias term')
-    parser.add_argument('--norm12',type=str2bool, default=False,help='It means just finetune norm1 and norm2 parts')
+    parser.add_argument('--norm1',type=str2bool, default=False,help='It means just finetune norm1 parts')
+    parser.add_argument('--norm2',type=str2bool, default=False,help='It means just finetune norm2 parts')
     # nargs=?，如果没有在命令行中出现对应的项，则给对应的项赋值为default。
     # 特殊的是，对于可选项，如果命令行中出现了此可选项，但是之后没有跟随赋值参数，则此时给此可选项并不是赋值default的值，而是赋值const的值。
     return parser
@@ -211,7 +212,7 @@ def worker_init_fn(worker_id):
     set_seed(GLOBAL_SEED + worker_id)
 
 # Partially finetuning ATTENTION or MLP or norm parts or BIAS part.
-def partial_ft(flag_attn,flag_mlp,flag_norm12,flag_bias,model):
+def partial_ft(flag_attn,flag_mlp,flag_norm1,flag_norm2,flag_bias,model):
 
     for n, p in model.named_parameters():
         p.requires_grad = False
@@ -220,6 +221,10 @@ def partial_ft(flag_attn,flag_mlp,flag_norm12,flag_bias,model):
     # model.pos_embed.requires_grad = True
     # for _, p in model.patch_embed.named_parameters():
     #     p.requires_grad = True
+
+    #复制某一层的权重
+    # model.state_dict()["model.blocks[0].mlp.fc1.weight"].copy_(model.state_dict()["model.blocks[1].mlp.fc1.weight"]) 
+
 
     if flag_attn:
         print('AND Finetune ATTENTION part.')
@@ -233,13 +238,18 @@ def partial_ft(flag_attn,flag_mlp,flag_norm12,flag_bias,model):
             for n, p in block.named_parameters():
                 if 'mlp' in n:
                     p.requires_grad = True
-    if flag_norm12:
-        print('AND Finetune norm12 parts.')
-        for n, p in model.blocks[-1:].named_parameters():
-            if 'norm1' in n:
-                p.requires_grad = True
-            if 'norm2' in n:
-                p.requires_grad = True
+    if flag_norm1:
+        print('AND Finetune norm1 parts.')
+        for block in model.blocks[-1:]:
+            for n, p in block.named_parameters():
+                if 'norm1' in n:
+                    p.requires_grad = True
+    if flag_norm2:
+        print('AND Finetune norm2 parts.')
+        for block in model.blocks[-1:]:
+            for n, p in block.named_parameters():
+                if 'norm2' in n:
+                    p.requires_grad = True
     if flag_bias:
         print('AND Finetune BIAS terms.')
         for n, p in model.named_parameters():
@@ -256,12 +266,12 @@ def partial_ft(flag_attn,flag_mlp,flag_norm12,flag_bias,model):
         p.requires_grad = True
 
     if args.reinit_blocks > 0:
-        reinit_parts(args.reinit_blocks,flag_attn,flag_mlp,flag_norm12,flag_bias,model)
+        reinit_parts(args.reinit_blocks,flag_attn,flag_mlp,flag_norm1,flag_norm2,flag_bias,model)
     
     for n, p in model.named_parameters():
         print(n,p.requires_grad)
 
-def reinit_parts(reinit_blocks,flag_attn,flag_mlp,flag_norm12,flag_bias,model):
+def reinit_parts(reinit_blocks,flag_attn,flag_mlp,flag_norm1,flag_norm2,flag_bias,model):
     if flag_attn and reinit_blocks > 0:
         print(f' AND Reinitializing Last {reinit_blocks} Blocks\' ATTENTION parts')
         for block in model.blocks[-reinit_blocks:]:
@@ -276,11 +286,14 @@ def reinit_parts(reinit_blocks,flag_attn,flag_mlp,flag_norm12,flag_bias,model):
             trunc_normal_(block.mlp.fc1.bias,std=1e-6)
             trunc_normal_(block.mlp.fc2.weight,std=2e-5)
             trunc_normal_(block.mlp.fc2.bias,std=1e-6)
-    elif flag_norm12 and reinit_blocks > 0:
-        print(f'AND Reinitializing Last {reinit_blocks} Blocks\' norm1&2 parts')
+    elif flag_norm1 and reinit_blocks > 0:
+        print(f'AND Reinitializing Last {reinit_blocks} Blocks\' norm1 parts')
         for block in model.blocks[-reinit_blocks:]:
             trunc_normal_(block.norm1.weight,std=2e-5)
             trunc_normal_(block.norm1.bias,std=1e-6)
+    elif flag_norm2 and reinit_blocks > 0:
+        print(f'AND Reinitializing Last {reinit_blocks} Blocks\' norm2 parts')
+        for block in model.blocks[-reinit_blocks:]:
             trunc_normal_(block.norm2.weight,std=2e-5)
             trunc_normal_(block.norm2.bias,std=1e-6)
     elif flag_bias and reinit_blocks > 0:
@@ -356,7 +369,7 @@ def main(args):
     dataset_train,dataset_val,dataset_test = data_loader_COVID19.load_finetune(args)
     # import pdb;pdb.set_trace()
 
-    if False:  # args.distributed:
+    if False: #args.distributed:
         print('distributed')
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
@@ -439,13 +452,14 @@ def main(args):
         drop_path_rate=args.drop_path,
         global_pool=args.global_pool,
     )
-
+    
     if args.finetune and not args.test:
         # pretrain_model_path = '/sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/'
         checkpoint = torch.load(args.finetune, map_location='cpu')
         print("Load pretrained checkpoint from: %s" % args.finetune)
-        if 'C_model_resumed_pretrain' in args.finetune or 'MAE_checkpoint_799' in args.finetune or 'data14' in args.finetune or 'data21' in args.finetune:
-            print('This is our own pretrained model.')
+        if 'CXC_resumed_pretrain' in args.finetune or 'data13_mae_pretrain' in args.finetune or 'data14_mae_pretrain' in args.finetune or 'data21_mae_pretrain' in args.finetune or 'data35_mae_pretrain' in args.finetune \
+            or 'checkpoint-' in args.finetune or 'CXC_mae_pretrain_vit_' in args.finetune:
+            print('This is our own medical pretrained model.'.upper())
             checkpoint_model = {k:v for k, v in checkpoint['model'].items() if 'decoder_' not in k and 'mask_token' not in k}  #自己pretrain的model里面包含decoder部分和mask_token，需要删掉,
                                                                                                     #且包含norm.weight/norm.bias，经过finetune会被换成fc_norm.weight/fc_norm.bias,并加上head.weight/head.bias
             state_dict = model.state_dict()
@@ -456,7 +470,7 @@ def main(args):
                     del checkpoint_model[k]
 
         elif os.path.basename(args.finetune) in ['mae_pretrain_vit_base.pth','mae_pretrain_vit_large.pth','mae_pretrain_vit_huge.pth']:
-            print('This is MAE official pretrained model.')
+            print('This is MAE official pretrained model.'.upper())
             checkpoint_model = checkpoint['model']       
             state_dict = model.state_dict()
 
@@ -465,7 +479,7 @@ def main(args):
                     print(f"Removing key {k} from pretrained checkpoint")
                     del checkpoint_model[k]
         else:
-            print('This is (our own intermediate or MAE official) finetuned model or TFS model.')
+            print('This is (the intermediate or MAE official) finetuned model or TFS model.'.upper())
             checkpoint_model = checkpoint['model']
             for k in ['head.weight', 'head.bias','fc_norm.weight', 'fc_norm.bias']:
                 if k in checkpoint_model:
@@ -485,19 +499,19 @@ def main(args):
             assert set(msg.missing_keys) == {'head.weight', 'head.bias'}
 
         # block-wise freezing
-        if (not args.attn and not args.mlp and not args.norm12 and not args.bias) and args.frozen_blocks > 0 and args.reinit_blocks == 0:
-            print('PARTIAL FREEZING.')
+        if (not args.attn and not args.mlp and not args.norm1 and not args.norm2 and not args.bias) and args.frozen_blocks > 0 and args.reinit_blocks == 0:
+            print('BLOCK-WISE FREEZING.')
             freeze_blocks(args.frozen_blocks,model)
 
         # Full fine-tuning and block-wise re-initializing
-        elif (not args.attn and not args.mlp and not args.norm12 and not args.bias) and args.frozen_blocks == 0 and args.reinit_blocks > 0:
+        elif (not args.attn and not args.mlp and not args.norm1 and not args.norm2 and not args.bias) and args.frozen_blocks == 0 and args.reinit_blocks > 0:
             print('FULL FINE-TUNING AND RE-INIT BLOCKS.')
             reinit_blocks(args.reinit_blocks,model)
          
         # Partial fine-tuning
-        elif args.attn or args.mlp or args.norm12 or args.bias:
+        elif args.attn or args.mlp or args.norm1 or args.norm2 or args.bias:
             print('PARTIAL part-wise FINE-TUNING.')
-            partial_ft(args.attn,args.mlp,args.norm12,args.bias,model)
+            partial_ft(args.attn,args.mlp,args.norm1,args.norm2,args.bias,model)
 
         # manually initialize fc layer
         trunc_normal_(model.head.weight, std=2e-5)
@@ -655,28 +669,27 @@ def main(args):
     with open(os.path.join(args.output_dir, args.save_dir,"log.txt"), mode="a", encoding="utf-8") as f:
         f.write(json.dumps(test_log_stats) + "\n")
     
-    os.remove(os.path.join(args.output_dir, args.save_dir,'checkpoint-best.pth'))
+    # os.remove(os.path.join(args.output_dir, args.save_dir,'checkpoint-best.pth'))
 
 if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
 
-    # os.environ["WANDB_DIR"] = os.path.abspath("/sharefs/baaihealth/xiaohongwang/MAE_COVID19")
-    run = wandb.init(config = args, project="MAE_COVID19_3", entity="bluedynamic",dir='/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output',settings=wandb.Settings(start_method="fork"))
-    # api = wandb.Api()
-    # run_id = run.id
-    # run = api.run("bluedynamic/MAE_COVID19/{}".format(run_id))
+    Path(args.output_dir).mkdir(parents=True, exist_ok=True)
+
+    # os.environ["WANDB_DIR"] = os.path.abspath(args.output_dir)
+    run = wandb.init(config = args, project="MAE_COVID19_jiuding", entity="bluedynamic",dir=args.output_dir,settings=wandb.Settings(start_method="fork"))
 
     if not args.finetune:
         print('Train from scratch with ViT.')
         args.tag = 'TFS'
         run.tags = run.tags + ('TFS',)
     else:
-        if (not args.attn and not args.mlp and not args.norm12 and not args.bias) and args.frozen_blocks == 0:
+        if (not args.attn and not args.mlp and not args.norm1 and not args.norm2 and not args.bias) and args.frozen_blocks == 0:
             print('PERFORM FULL FINE-TUNING with/without re-initializing.')
             args.tag = 'FFT'
             run.tags = run.tags + ('FFT',)
-        elif (not args.attn and not args.mlp and not args.norm12 and not args.bias) and args.frozen_blocks > 0 and args.reinit_blocks == 0:
+        elif (not args.attn and not args.mlp and not args.norm1 and not args.norm2 and not args.bias) and args.frozen_blocks > 0 and args.reinit_blocks == 0:
             print('PERFORM block-wise FREEZING.')
             args.tag = 'PFR'
             run.tags = run.tags + ('PFR',)
@@ -684,16 +697,16 @@ if __name__ == '__main__':
             print('PERFORM PARTIAL FINE-TUNING.')
             args.tag = 'PFT'
             run.tags = run.tags + ('PFT',)
-        
+
 
     if args.output_dir and not args.test:
         if args.tag == 'TFS':
-            args.save_dir = os.path.join('output_tfs',args.split_ratio.strip(),'TFS_with_' + args.model, args.tar + '_seed' + str(args.seed) \
+            args.save_dir = os.path.join('output_tfs','TFS_with_' + args.model, args.split_ratio.strip(), args.tar + '_seed' + str(args.seed) \
                 + '_bs' +str(args.batch_size) + '_b' +str(round(args.blr,5)) + '_l' +str(round(args.layer_decay,4)) + '_w' +str(round(args.weight_decay,4)) \
                 + '_d' +str(round(args.drop_path,4)) + '_r' +str(round(args.reprob,4)) + '_m' +str(round(args.mixup,4)) + '_c' +str(round(args.cutmix,4)) + '_' + args.tag)
             Path(args.output_dir,args.save_dir).mkdir(parents=True, exist_ok=True)# parents：如果父目录不存在，是否创建父目录；exist:只有在目录不存在时创建目录，目录已存在时不会抛出异常。
         else:
-            args.save_dir = os.path.join('output_finetune',args.split_ratio.strip(),'finetune_with_'+os.path.basename(args.finetune).strip('.pth'), args.tar + '_seed' + str(args.seed) \
+            args.save_dir = os.path.join('output_finetune','finetune_with_'+os.path.basename(args.finetune).strip('.pth'), args.split_ratio.strip(), args.tar + '_seed' + str(args.seed) \
                 + '_bs' +str(args.batch_size) + '_b' +str(round(args.blr,5)) + '_l' +str(round(args.layer_decay,4)) + '_w' +str(round(args.weight_decay,4)) \
                 + '_d' +str(round(args.drop_path,4)) + '_r' +str(round(args.reprob,4)) + '_m' +str(round(args.mixup,4)) + '_c' +str(round(args.cutmix,4)) \
                 + '_rb' +str(args.reinit_blocks) + '_fb' +str(args.frozen_blocks) + '_attn' + str(args.attn) + '_mlp' + str(args.mlp) + '_bias' + str(args.bias) + '_' + args.tag)

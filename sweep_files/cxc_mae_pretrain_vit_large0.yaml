@@ -1,22 +1,17 @@
 entity: bluedynamic
-method: bayes
-metric: # 衡量目标
-  goal: maximize
-  name: test_acc
-name: data21base
+method: grid
+name: CXC_mae_pretrain_vit_large
 parameters:
   model: 
-    value: vit_base_patch16
+    value: vit_large_patch16
   tar:
     values: 
     # - U_sani2
     - U_orig
   batch_size:
     value: 16
-  blr:
-    distribution: uniform
-    max: 0.01
-    min: 0.0001
+  blr: 
+    value: 0.001
   cutmix:
     distribution: uniform
     max: 1
@@ -42,10 +37,10 @@ parameters:
     max: 1
     min: 0
   seed:
-    value: 42
+    values: [0,1,2,3,4,5,6,7,8,9,10,42]
   finetune:
     values:
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/data21_mae_pretrain_vit_base.pth
+    - /home/hwxiao/medical_pretrained_models/MAE/CXC_mae_pretrain_vit_large.pth
   split_ratio:
     values:
     # - '0.1:4.9:5'
@@ -112,4 +107,4 @@ parameters:
     # - '5.7:1.6:2.7'
     # - '6.2:1.2:2.6'
 program: main_finetune_txt_ddp.py
-project: MAE_COVID19_3
+project: MAE_COVID19_jiuding

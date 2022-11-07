@@ -1,14 +1,12 @@
 # encoding=utf-8
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 from pylab import *         #支持中文
 # mpl.rcParams['font.sans-serif'] = ['SimHei']
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+#从pyplot导入MultipleLocator类，这个类用于设置刻度间隔
 
-names = ['0.4','0.5','0.6','0.7','0.8','0.9','1.0','1.1','1.2','1.3','1.4','1.5','1.6','1.7','1.8','1.9','2.0',
-'2.1','2.2','2.3','2.4','2.5','2.6','2.7','2.8','2.9','3.0','3.1','3.2','3.3','3.4','3.5','3.6','3.7',
-'3.8','3.9','4.0','4.1','4.2','4.3','4.4','4.5','4.6','4.7','4.8','4.9'
-]
-x = range(len(names))
-# lineplot_sweep_U_mae_pretrain_vit_base_datasplit
 acc_sani = [
 0.606896552,
 0.517241379,
@@ -154,7 +152,7 @@ auc_sani = [
 0.917337936
 ]
 
-# ***************************
+# # ***************************
 acc_orig = [
 0.735294118,
 0.745989305,
@@ -301,41 +299,52 @@ auc_orig = [
 0.959109835,
 0.973338119
 ]
-#plt.plot(x, y, 'ro-')
-#plt.plot(x, y1, 'bo-')
-# plt.xlim(0, 5) # 限定横轴的范围
-# plt.ylim(0, 1) # 限定纵轴的范围
 
-# plt.rcParams['savefig.dpi'] = 300 #图片像素
-# plt.rcParams['figure.dpi'] = 300 #分辨率
-# plt.rcParams['figure.figsize'] = (80,40)
-# plt.rcParams['axes.titlesize'] = 15 #子图的标题大小
-# plt.rcParams['axes.labelsize'] = 15 #子图的标签大小
-# plt.rcParams['xtick.labelsize'] = 15 
-# plt.rcParams['ytick.labelsize'] = 15 
+from scipy.interpolate import make_interp_spline
+def smooth_xy(lx, ly):
+    """数据平滑处理
+    :param lx: x轴数据,数组
+    :param ly: y轴数据,数组
+    :return: 平滑后的x、y轴数据,数组 [slx, sly]
+    """
+    x = np.array(lx)
+    y = np.array(ly)
+    x_smooth = np.linspace(x.min(), x.max(), 10000)
+    y_smooth = make_interp_spline(x, y)(x_smooth)
+    return [x_smooth, y_smooth]
 
+x_values=[x/10 for x in range(4,50,1)]
 
-plt.plot(x, acc_orig, linewidth=1.0, label='Accuracy on U_orig')
-plt.plot(x, f1_orig, linewidth=1.0, label='F1 on U_orig')
-plt.plot(x, auc_orig,linewidth=1.0, label='AUC on U_orig')
-plt.legend() # 让图例生效
-plt.xticks(x, names, rotation=90)
-plt.margins(0)
-plt.xlabel("Training set portion") #X轴标签
-plt.ylabel("Performance Score") #Y轴标签
-plt.title("IN1K_mae_pretrain_vit_base + U_orig") #标题
-plt.savefig('../savedfig/IN1K_mae_pretrain_vit_base_U_orig.png')
-plt.close()
-plt.clf()
+xy_s1 = smooth_xy(x_values,acc_orig)
+xy_s2 = smooth_xy(x_values,acc_sani)
+plt.plot(xy_s1[0],xy_s1[1],label='U_orig')
+plt.plot(xy_s2[0],xy_s2[1],label='U_sani')
 
-plt.plot(x, acc_sani, linewidth=1.0, label='Accuracy on U_sani')
-plt.plot(x, f1_sani, linewidth=1.0, label='F1 on U_sani')
-plt.plot(x, auc_sani,linewidth=1.0, label='AUC on U_sani')
-plt.legend() # 让图例生效
-plt.xticks(x, names, rotation=90)
-plt.margins(0)
-plt.xlabel("Training set portion") #X轴标签
-plt.ylabel("Performance Score") #Y轴标签
-plt.title("IN1K_mae_pretrain_vit_base + U_sani") #标题
-# plt.show()
-plt.savefig('../savedfig/IN1K_mae_pretrain_vit_base_U_sani.png')
+# plt.plot(x_values,acc_orig,label='U_orig')
+# plt.plot(x_values,acc_sani,label='U_sani')
+plt.legend()
+# plt.title('maebase',fontsize=14)
+plt.tick_params(axis='both',which='major',labelsize=12)
+plt.xlabel("Training set portion",fontsize=12) #X轴标签
+plt.ylabel("Accuracy",fontsize=12) #Y轴标签
+
+ 
+xmajorLocator = MultipleLocator(0.5) 		# 将x轴主刻度设置为0.4的倍数
+xmajorFormatter = FormatStrFormatter('%1.1f') # 设置x轴标签的格式
+xminorLocator = MultipleLocator(0.2) 		# 将x轴次刻度设置为0.2的倍数
+ymajorLocator = MultipleLocator(0.1) 	# 将y轴主刻度设置为0.1的倍数
+ymajorFormatter = FormatStrFormatter('%1.2f') # 设置y轴标签的格式
+yminorLocator = MultipleLocator(0.05)	# 将y轴次刻度设置为0.1的倍数
+
+ax = plt.gca()
+# 设置主刻度标签的位置，标签文本的格式
+ax.xaxis.set_major_locator(xmajorLocator)
+ax.xaxis.set_major_formatter(xmajorFormatter)
+ax.yaxis.set_major_locator(ymajorLocator)
+ax.yaxis.set_major_formatter(ymajorFormatter)
+ 
+# 显示次刻度标签的位置
+ax.xaxis.set_minor_locator(xminorLocator)
+ax.yaxis.set_minor_locator(yminorLocator)
+
+plt.savefig('./linechart_maebase.png')

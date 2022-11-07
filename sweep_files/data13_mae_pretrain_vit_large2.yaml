@@ -1,0 +1,53 @@
+entity: bluedynamic
+method: bayes
+metric: # 衡量目标
+  goal: maximize
+  name: test_acc
+name: data13_mae_pretrain_vit_large2
+parameters:
+  model: 
+    value: vit_large_patch16
+  tar:
+    values: 
+    # - U_sani2
+    - U_orig
+  batch_size:
+    value: 16
+  blr: 
+    distribution: uniform
+    max: 0.01
+    min: 0.00001
+  cutmix:
+    distribution: uniform
+    max: 1
+    min: 0
+  drop_path:
+    distribution: uniform
+    max: 1
+    min: 0
+  layer_decay:
+    distribution: uniform
+    max: 1
+    min: 0
+  mixup:
+    distribution: uniform
+    max: 1
+    min: 0
+  reprob:
+    distribution: uniform
+    max: 1
+    min: 0
+  weight_decay:
+    distribution: uniform
+    max: 1
+    min: 0
+  seed:
+    value: 42
+  finetune:
+    values:
+    - /home/hwxiao/medical_pretrained_models/MAE/data13_mae_pretrain_vit_large.pth
+  split_ratio:
+    values:
+    - '2.0:3.0:5'
+program: main_finetune_txt_ddp.py
+project: MAE_COVID19_jiuding
