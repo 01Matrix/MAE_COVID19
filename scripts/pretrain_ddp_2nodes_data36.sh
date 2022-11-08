@@ -56,7 +56,7 @@ OMP_NUM_THREADS=1 torchrun --nnodes=2 --node_rank=$RLAUNCH_REPLICA --nproc_per_n
     --epochs 800 \
     --warmup_epochs 40 \
     --model mae_vit_large_patch16 \
-    --dataset CHE CCT C1920 CAR CCS C1000 CIC MRA MRB S_orig SIRM L_orig CC_orig \
+    --dataset CHE CCT C1920 CAR CCS C1000 CIC MRA MRB S_orig SIRM L_orig CXC CC_orig \
                 CXSD CRDX CDX QUEX CCXD MRC CHEXD \
                 CHAOSCT DL KITS LIDC LITS MMWHS VERSE LYMPH \
-                CXNIH CXPERT DR MNS MURA CXIU OCX
+                CXNIH CXPERT DR MNS MURA CXIU OCX 

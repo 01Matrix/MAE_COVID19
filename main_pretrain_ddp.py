@@ -79,12 +79,12 @@ def get_args_parser():
                         help='epochs to warmup LR')
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='', type=str,help='dataset path')
+    parser.add_argument('--data_path', default='/share/project/public_medical_images/datasets', type=str,help='dataset path')
     parser.add_argument('--dataset', type=str, nargs='+', help='pretrain dataset list')
 
-    parser.add_argument('--output_dir', default='/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output/output_pretrain',
+    parser.add_argument('--output_dir', default='/home/hwxiao/mycodes/MAE_COVID19/outputs',
                         help='path where to save, empty for no saving')
-    parser.add_argument('--log_dir', default='/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output/output_pretrain',
+    parser.add_argument('--log_dir', default='/home/hwxiao/mycodes/MAE_COVID19/outputs',
                         help='path where to tensorboard log')
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
@@ -256,15 +256,14 @@ if __name__ == '__main__':
     args = args.parse_args()
     # os.environ["WANDB_RUN_GROUP"] = "experiment-" + wandb.util.generate_id()
     # group_id = os.environ["WANDB_RUN_GROUP"]
-    os.environ["WANDB_DIR"] = os.path.abspath("/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output")
-    wandb.init(config = args, project="MAE_COVID19_pretrain_2", entity="bluedynamic", \
-            dir="/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output", group="DDP",job_type=f"{args.jobtype}", \
-            settings=wandb.Settings(start_method='fork'))
+    # os.environ["WANDB_DIR"] = os.path.abspath("/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output")
+    wandb.init(config = args, project="MAE_COVID19_pretrain_jiuding", entity="bluedynamic", \
+            dir=args.output_dir, group="DDP",job_type=f"{args.jobtype}",settings=wandb.Settings(start_method='fork'))
     if args.model == 'mae_vit_base_patch16':
         TAG = 'base'
     elif args.model == 'mae_vit_large_patch16':
         TAG = 'large'
     if args.output_dir:
-        args.save_dir = TAG + '_' + '_'.join(args.dataset) + '_pretrain'
+        args.save_dir = os.path.join('output_pretrain', TAG + '_' + '_'.join(args.dataset) + '_pretrain')
         Path(args.output_dir,args.save_dir).mkdir(parents=True, exist_ok=True)
     main(args)
