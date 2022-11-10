@@ -457,7 +457,9 @@ def main(args):
         # pretrain_model_path = '/sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/'
         checkpoint = torch.load(args.finetune, map_location='cpu')
         print("Load pretrained checkpoint from: %s" % args.finetune)
-        if 'CXC_resumed_pretrain' in args.finetune or 'data13_mae_pretrain' in args.finetune or 'data14_mae_pretrain' in args.finetune or 'data21_mae_pretrain' in args.finetune or 'data35_mae_pretrain' in args.finetune \
+        if 'CXC_resumed_pretrain' in args.finetune or 'data13_mae_pretrain' in args.finetune or 'data14_mae_pretrain' in args.finetune \
+            or 'data21_mae_pretrain' in args.finetune or 'data35_mae_pretrain' in args.finetune \
+            or 'deeplesion_mae_pretrain' in args.finetune or 'chexpert_mae_pretrain' in args.finetune or '7xray_mae_pretrain' in args.finetune \
             or 'checkpoint-' in args.finetune or 'CXC_mae_pretrain_vit_' in args.finetune:
             print('This is our own medical pretrained model.'.upper())
             checkpoint_model = {k:v for k, v in checkpoint['model'].items() if 'decoder_' not in k and 'mask_token' not in k}  #自己pretrain的model里面包含decoder部分和mask_token，需要删掉,
@@ -669,7 +671,7 @@ def main(args):
     with open(os.path.join(args.output_dir, args.save_dir,"log.txt"), mode="a", encoding="utf-8") as f:
         f.write(json.dumps(test_log_stats) + "\n")
     
-    # os.remove(os.path.join(args.output_dir, args.save_dir,'checkpoint-best.pth'))
+    os.remove(os.path.join(args.output_dir, args.save_dir,'checkpoint-best.pth')) # not to save every checkpoint for wandb sweep runs in order to save device storage space
 
 if __name__ == '__main__':
     args = get_args_parser()
