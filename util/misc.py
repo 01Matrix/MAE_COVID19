@@ -129,8 +129,8 @@ class MetricLogger(object):
         iter_time = SmoothedValue(fmt='{avg:.4f}')
         data_time = SmoothedValue(fmt='{avg:.4f}')
         space_fmt = ':' + str(len(str(len(iterable)))) + 'd'
-        print('space_fmt',space_fmt)
-        print('len(iterable)',len(iterable)) # total iteration
+        print('space_fmt:',space_fmt)
+        print('len(iterable):',len(iterable)) # total iteration
         log_msg = [
             header,
             '[{0' + space_fmt + '}/{1}]',
