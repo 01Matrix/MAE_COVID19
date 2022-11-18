@@ -86,7 +86,7 @@ def split_list(COVID_pth,NonCOVID_pth,args):
     # val_NonCOVID = NonCOVID[int(split_ratio[0]/10*len(NonCOVID)):int((split_ratio[0]+split_ratio[1])/10*len(NonCOVID))]
     # test_NonCOVID = NonCOVID[int((split_ratio[0]+split_ratio[1])/10*len(NonCOVID)):]
 
-    print('$$$$$$$$',int((split_ratio[0]+split_ratio[1])))
+    # print('Percentage of train and val fine-tune dataset:',int((split_ratio[0]+split_ratio[1])))
     test_COVID = COVID[int((split_ratio[0]+split_ratio[1])/10*len(COVID)):]
     test_NonCOVID = NonCOVID[int((split_ratio[0]+split_ratio[1])/10*len(NonCOVID)):]
     test_list = test_COVID + test_NonCOVID

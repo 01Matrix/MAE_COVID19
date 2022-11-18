@@ -16,7 +16,7 @@ from typing import Iterable, Optional
 
 import torch
 import torch.nn.functional as F
-
+import wandb
 import numpy as np
 
 from timm.data import Mixup
@@ -27,10 +27,14 @@ from sklearn.preprocessing import label_binarize
 import util.misc as misc
 import util.lr_sched as lr_sched
 from sklearn.metrics import recall_score, precision_score, accuracy_score, confusion_matrix, roc_auc_score, f1_score
+
+import warnings
+warnings.filterwarnings("ignore")
+
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     data_loader: Iterable, optimizer: torch.optim.Optimizer,
                     device: torch.device, epoch: int, loss_scaler, max_norm: float = 0,
-                    mixup_fn: Optional[Mixup] = None, log_writer=None,
+                    mixup_fn: Optional[Mixup] = None,
                     args=None):
     model.train(True)
     metric_logger = misc.MetricLogger(delimiter="  ")
@@ -41,9 +45,6 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     accum_iter = args.accum_iter
 
     optimizer.zero_grad()
-
-    if log_writer is not None:
-        print('log_dir: {}'.format(log_writer.log_dir))
 
     for data_iter_step, (samples, targets) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
             
@@ -57,9 +58,9 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         if mixup_fn is not None:
             samples, targets = mixup_fn(samples, targets)
 
-        with torch.cuda.amp.autocast():
-            outputs = model(samples)
-            loss = criterion(outputs, targets)
+        # with torch.cuda.amp.autocast():  # 关闭混合精度
+        outputs = model(samples)
+        loss = criterion(outputs, targets)
         
         loss_value = loss.item()
 
@@ -86,13 +87,15 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         metric_logger.update(lr=max_lr)
 
         loss_value_reduce = misc.all_reduce_mean(loss_value)
-        if log_writer is not None and (data_iter_step + 1) % accum_iter == 0:
+        if (data_iter_step + 1) % accum_iter == 0:
             """ We use epoch_1000x as the x-axis in tensorboard.
             This calibrates different curves when batch size changes.
             """
             epoch_1000x = int((data_iter_step / len(data_loader) + epoch) * 1000)
-            log_writer.add_scalar('loss', loss_value_reduce, epoch_1000x)
-            log_writer.add_scalar('lr', max_lr, epoch_1000x)
+            # log_writer.add_scalar('loss', loss_value_reduce, epoch_1000x)
+            # log_writer.add_scalar('lr', max_lr, epoch_1000x)
+            wandb.log({"loss_value_reduce": loss_value_reduce, "epoch_1000x": epoch_1000x})
+            wandb.log({"max_lr": max_lr, "epoch_1000x": epoch_1000x})
 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
@@ -108,7 +111,7 @@ def evaluate(phase, data_loader, model, device):
     if phase == 'test':
         header = 'Test:'
     elif phase == 'val':
-        header = 'val'
+        header = 'Val'
 
     # switch to evaluation mode
     model.eval()
@@ -157,14 +160,14 @@ def evaluate(phase, data_loader, model, device):
     # import pdb;pdb.set_trace()
 
     stats_dict={
+    'loss':metric_logger.loss.global_avg,
     'acc':acc,
+    'auc':AUC_score,
+    'f1':f1,
     'pre':Precision,# precision = tp/(tp+fp)
     'recall':Recall,# recall = tp/(tp+fn)=sensitivity
-    'f1':f1,
-    'auc':AUC_score,
     'specificity':Specificity,
-    'CM(tn,fp,fn,tp)':'[{} {} {} {}]'.format(tn, fp, fn, tp),
-    'loss':metric_logger.loss.global_avg
+    'CM(tn,fp,fn,tp)':'[{} {} {} {}]'.format(tn, fp, fn, tp)
     }
 
     return stats_dict

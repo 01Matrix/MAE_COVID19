@@ -129,8 +129,8 @@ class MetricLogger(object):
         iter_time = SmoothedValue(fmt='{avg:.4f}')
         data_time = SmoothedValue(fmt='{avg:.4f}')
         space_fmt = ':' + str(len(str(len(iterable)))) + 'd'
-        print('space_fmt:',space_fmt)
-        print('len(iterable):',len(iterable)) # total iteration
+        # print('space_fmt:',space_fmt)
+        # print('len(iterable):',len(iterable)) # total iteration
         log_msg = [
             header,
             '[{0' + space_fmt + '}/{1}]',
@@ -336,12 +336,11 @@ def load_model(args, model_without_ddp, optimizer, loss_scaler):
         if 'optimizer' in checkpoint and 'epoch' in checkpoint and not (hasattr(args, 'test') and args.test):
             optimizer.load_state_dict(checkpoint['optimizer'])
             args.start_epoch = checkpoint['epoch'] + 1
-            print('************resume start_epoch:',args.start_epoch)
+            print('resume from epoch {}'.format(args.start_epoch))
             print(checkpoint.keys())
             if 'scaler' in checkpoint:
                 loss_scaler.load_state_dict(checkpoint['scaler'])
             print("With optim & sched!")
-
 
 def all_reduce_mean(x):
     world_size = get_world_size()

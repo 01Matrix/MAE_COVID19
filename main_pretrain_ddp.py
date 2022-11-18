@@ -13,6 +13,7 @@ import datetime
 import json
 import numpy as np
 import os
+from loguru import logger
 import time
 from pathlib import Path
 import wandb
@@ -91,6 +92,8 @@ def get_args_parser():
     parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--resume', default='',
                         help='resume from checkpoint')
+    parser.add_argument('--continual_pretrain', action='store_true',
+                        help='continual pretraining from other checkpoint with different dataset')
 
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                         help='start epoch')
@@ -237,8 +240,8 @@ def main(args):
         log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
                         'epoch': epoch,}
 
-        wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
-        wandb.log({"train_lr": train_stats['lr'],"epoch": epoch})
+        # wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
+        # wandb.log({"train_lr": train_stats['lr'],"epoch": epoch})
 
         if args.output_dir:
             if log_writer is not None:
@@ -257,13 +260,16 @@ if __name__ == '__main__':
     # os.environ["WANDB_RUN_GROUP"] = "experiment-" + wandb.util.generate_id()
     # group_id = os.environ["WANDB_RUN_GROUP"]
     # os.environ["WANDB_DIR"] = os.path.abspath("/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output")
-    wandb.init(config = args, project="MAE_COVID19_pretrain_jiuding", entity="bluedynamic", \
-            dir=args.output_dir, group="DDP",job_type=f"{args.jobtype}",settings=wandb.Settings(start_method='fork'))
+    # wandb.login(key='67458076cf34cba4e7e14f4e7a3e35b074351b4c',timeout=30)
+    # wandb.init(config = args, project="MAE_COVID19_pretrain_jiuding", entity="bluedynamic", \
+            # dir=args.output_dir, group="DDP",job_type=f"{args.jobtype}",settings=wandb.Settings(start_method='fork'))
     if args.model == 'mae_vit_base_patch16':
         TAG = 'base'
     elif args.model == 'mae_vit_large_patch16':
         TAG = 'large'
     if args.output_dir:
         args.save_dir = os.path.join('output_pretrain', TAG + '_' + '_'.join(args.dataset) + '_pretrain')
+        if args.continual_pretrain:
+            args.save_dir = os.path.join('output_pretrain', TAG + '_' + '_'.join(args.dataset) + 'continual_pretrain')
         Path(args.output_dir,args.save_dir).mkdir(parents=True, exist_ok=True)
     main(args)

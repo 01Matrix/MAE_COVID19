@@ -14,10 +14,10 @@ from curses import flash
 import datetime
 from distutils.command.config import config
 import json
-# from random import shuffle
 import numpy as np
 import random
 import wandb
+from loguru import logger
 import os
 import time
 from pathlib import Path
@@ -25,7 +25,6 @@ import torch
 from torch import nn
 import torch.backends.cudnn as cudnn
 from torch.utils.tensorboard import SummaryWriter
-# from datasets.covid_ct_dataset_txt import COVID_CT_Dataset_txt
 import util.data_loader_COVID19 as data_loader_COVID19
 import timm
 assert timm.__version__ == "0.5.4" # version check
@@ -125,7 +124,6 @@ def get_args_parser():
     parser.add_argument('--cls_token', action='store_false', dest='global_pool',
                         help='Use class token instead of global pool for classification')
 
-
     # Dataset parameters
     parser.add_argument('--data_path', default='/share/project/public_medical_images/datasets', type=str,
                         help='dataset path')
@@ -204,7 +202,7 @@ def set_seed(seed):
         cudnn.deterministic = True
         cudnn.benchmark = False
 
-GLOBAL_SEED =1 
+GLOBAL_SEED = 1 
 GLOBAL_WORKER_ID = None
 def worker_init_fn(worker_id):
     global GLOBAL_WORKER_ID
@@ -349,27 +347,24 @@ def freeze_blocks(frozen_blocks,model):
     for _,p in model.head.named_parameters():
         p.requires_grad = True
 
-
 def main(args):
     
-    # misc.init_distributed_mode(args)
-
+    args.distributed = False # misc.init_distributed_mode(args) # use one single GPU
+    
     print('job dir: {}'.format(os.path.dirname(os.path.realpath(__file__))))
     print("{}".format(args).replace(', ', ',\n'))
+    print('log dir:{}'.format(os.path.join(args.output_dir,args.save_dir)))
 
     device = torch.device(args.device)
 
-    set_seed(args.seed)
     # fix the seed for reproducibility
-    # seed = args.seed + misc.get_rank()
-    # torch.manual_seed(seed)
-    # np.random.seed(seed)
-    # cudnn.benchmark = True
+    seed = args.seed + misc.get_rank()
+    print('actual seed:',seed)
+    set_seed(args.seed)
 
     dataset_train,dataset_val,dataset_test = data_loader_COVID19.load_finetune(args)
-    # import pdb;pdb.set_trace()
 
-    if False: #args.distributed:
+    if args.distributed:
         print('distributed')
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
@@ -396,10 +391,7 @@ def main(args):
 
     # if global_rank == 0 and not args.test:
     if not args.test:
-        # os.makedirs(args.log_dir, exist_ok=True)
-        log_writer = SummaryWriter(log_dir=os.path.join(args.output_dir,args.save_dir))
-    else:
-        log_writer = None
+        logger.add(os.path.join(args.output_dir, args.save_dir,"loguru_log.txt"))
 
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, 
@@ -431,7 +423,6 @@ def main(args):
         worker_init_fn=worker_init_fn
     )
 
-
     mixup_fn = None
     mixup_active = args.mixup > 0 or args.cutmix > 0. or args.cutmix_minmax is not None
     if mixup_active:
@@ -439,12 +430,14 @@ def main(args):
         mixup_fn = Mixup(
             mixup_alpha=args.mixup, cutmix_alpha=args.cutmix, cutmix_minmax=args.cutmix_minmax,
             prob=args.mixup_prob, switch_prob=args.mixup_switch_prob, mode=args.mixup_mode,
-            label_smoothing=args.smoothing, num_classes=args.nb_classes)
+            label_smoothing=args.smoothing, num_classes=args.nb_classes
+        )
     
-    if 'vit_large' in os.path.basename(args.finetune) or 'large' in args.finetune:
+    if 'vit_base' in os.path.basename(args.finetune) or 'base' in args.finetune:
+        args.model = 'vit_base_patch16'
+    elif 'vit_large' in os.path.basename(args.finetune) or 'large' in args.finetune:
         args.model = 'vit_large_patch16'
-
-    if 'vit_huge' in os.path.basename(args.finetune) or 'huge' in args.finetune:
+    elif 'vit_huge' in os.path.basename(args.finetune) or 'huge' in args.finetune:
         args.model = 'vit_huge_patch14'
 
     model = models_vit.__dict__[args.model](
@@ -454,14 +447,14 @@ def main(args):
     )
     
     if args.finetune and not args.test:
-        # pretrain_model_path = '/sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/'
+        # pretrain_model_path = '/home/hwxiao/medical_pretrained_models/MAE'
         checkpoint = torch.load(args.finetune, map_location='cpu')
-        print("Load pretrained checkpoint from: %s" % args.finetune)
-        if 'CXC_resumed_pretrain' in args.finetune or 'data13_mae_pretrain' in args.finetune or 'data14_mae_pretrain' in args.finetune \
+        logger.info("Load pretrained checkpoint from: %s" % args.finetune)
+        if 'CXC_resumed_pretrain' in args.finetune or 'CXC_continual_' in args.finetune or 'data13_mae_pretrain' in args.finetune or 'data14_mae_pretrain' in args.finetune \
             or 'data21_mae_pretrain' in args.finetune or 'data35_mae_pretrain' in args.finetune \
             or 'deeplesion_mae_pretrain' in args.finetune or 'chexpert_mae_pretrain' in args.finetune or '7xray_mae_pretrain' in args.finetune \
-            or 'checkpoint-' in args.finetune or 'CXC_mae_pretrain_vit_' in args.finetune:
-            print('This is our own medical pretrained model.'.upper())
+            or ('checkpoint-' in args.finetune and 'checkpoint-best' not in args.finetune) or 'CXC_mae_pretrain_vit_' in args.finetune:
+            logger.info('This is our own medical pretrained model.'.upper())
             checkpoint_model = {k:v for k, v in checkpoint['model'].items() if 'decoder_' not in k and 'mask_token' not in k}  #自己pretrain的model里面包含decoder部分和mask_token，需要删掉,
                                                                                                     #且包含norm.weight/norm.bias，经过finetune会被换成fc_norm.weight/fc_norm.bias,并加上head.weight/head.bias
             state_dict = model.state_dict()
@@ -536,19 +529,17 @@ def main(args):
     print("accumulate grad iterations: %d" % args.accum_iter)
     print("effective batch size: %d" % eff_batch_size)
 
-    # if args.distributed:
-    #     model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-    #     model_without_ddp = model.module
-
+    if args.distributed:
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+        model_without_ddp = model.module
 
     # build optimizer with layer-wise lr decay (lrd)
-    # if hasattr(model_without_ddp, 'no_weight_decay'):
-    #     print('no_weight_decay_list',model_without_ddp.no_weight_decay())
+    if hasattr(model_without_ddp, 'no_weight_decay'):
+        print('no_weight_decay_list:',model_without_ddp.no_weight_decay())
     param_groups = lrd.param_groups_lrd(model_without_ddp, args.weight_decay,
         no_weight_decay_list=model_without_ddp.no_weight_decay(), # no_weight_decay_list = {'dist_token', 'cls_token', 'pos_embed'}; DeiT中distilled = True时才有dist_token;
         layer_decay=args.layer_decay                              # self.dist_token = nn.Parameter(torch.zeros(1, 1, self.embed_dim))
     )
-    # model_without_ddp = fastfood.FastfoodWrap(model_without_ddp,intrinsic_dimension=5000, device=0)
 
     optimizer = torch.optim.AdamW(param_groups, lr=args.lr)
     loss_scaler = NativeScaler()
@@ -566,7 +557,7 @@ def main(args):
     misc.load_model(args=args, model_without_ddp=model_without_ddp, optimizer=optimizer, loss_scaler=loss_scaler)
 
     if args.test:
-        print('#'*20)
+        print('#'*30)
         test_stats = evaluate('test',data_loader_test, model, device)
         print(f"Accuracy of the network on the {len(dataset_test)} test images: {test_stats['acc']:.4f}")
         log_stats = {**{f'test_{k}': v for k, v in test_stats.items()}}
@@ -578,69 +569,69 @@ def main(args):
     max_accuracy = 0.0
     model_best = model
 
-    with open(os.path.join(args.output_dir, args.save_dir,"log.txt"), mode="w", encoding="utf-8") as f:
-        f.write('random_seed:{}; finetune dataset:{}; finetune model:{}'.format(args.seed, args.tar,args.finetune) + "\n")
+    logger.info('random_seed:{}; finetune dataset:{}; finetune model:{}'.format(args.seed, args.tar,args.finetune))
 
     stop = 0
     for epoch in range(args.start_epoch, args.epochs):
         stop += 1
-        # if args.distributed:
-        #     data_loader_train.sampler.set_epoch(epoch)
+        if args.distributed:
+            data_loader_train.sampler.set_epoch(epoch)
+
+        print('-' * 30)
+        print(f"Number of train images: {len(dataset_train)}")
+        print('-' * 30)
         train_stats = train_one_epoch(
             model, criterion, data_loader_train,
             optimizer, device, epoch, loss_scaler,
             args.clip_grad, mixup_fn,
-            log_writer=log_writer,
             args=args
         )
+        # Save a checkpoint every 50 epochs
         if args.output_dir and args.save_all and epoch % 50 == 0:
             misc.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
 
+        print('-' * 30)
+        print(f"Number of val images: {len(dataset_val)}")
+        print('-' * 30)
         val_stats = evaluate('val',data_loader_val, model, device)
 
-        print(f"Number of val images: {len(dataset_val)}")
-        # max_accuracy = max(max_accuracy, test_stats["acc1"])
-        if val_stats["acc"] >= max_accuracy: # al_stats["acc"] >= max_accuracy:
+        wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
+        wandb.log({"val_loss": val_stats['loss'],"epoch": epoch})
+        wandb.log({"val_acc": val_stats['acc'],"epoch": epoch})
+        # wandb.log({"val_auc": val_stats['auc'],"epoch": epoch})
+        # wandb.log({"val_f1": val_stats['f1'],"epoch": epoch})
+        # wandb.log({"val_pre": val_stats['pre'],"epoch": epoch})
+        # wandb.log({"val_recall": val_stats['recall'],"epoch": epoch})
+        # wandb.log({"val_specificity": val_stats['specificity'],"epoch": epoch})
+        # wandb.log({"val_CM": val_stats['CM(tn,fp,fn,tp)'],"epoch": epoch})
+
+        train_log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
+                           **{f'val_{k}': v for k, v in val_stats.items()},
+                           'epoch': epoch,
+                           'n_parameters': n_parameters
+                        }
+
+        if args.output_dir and misc.is_main_process():
+            logger.info(train_log_stats)
+            logger.info('\n')
+
+        # To determine when to stop early
+        if val_stats["acc"] >= max_accuracy:
             stop = 0
-            wandb.run.summary['best_val_acc'] = val_stats["acc"]
             max_accuracy = val_stats["acc"]
+            # Only save the best model
             misc.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch='best')
             model_best = model
             best_epoch = epoch
 
-            print('-' * 20)
-            print('Best epoch:', best_epoch)
-            print(f'Max accuracy: {max_accuracy:.4f}')
-            print('-' * 20,'\n')
-
-        if log_writer is not None:
-            log_writer.add_scalar('perf/val_acc', val_stats['acc'], epoch)
-            log_writer.add_scalar('perf/val_pre', val_stats['pre'], epoch)
-            log_writer.add_scalar('perf/val_recall', val_stats['recall'], epoch)
-            log_writer.add_scalar('perf/val_f1', val_stats['f1'], epoch)
-            log_writer.add_scalar('perf/val_auc', val_stats['auc'], epoch)
-            log_writer.add_scalar('perf/val_specificity', val_stats['specificity'], epoch)
-            log_writer.add_scalar('perf/val_loss', val_stats['loss'], epoch)
-
-        wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
-        wandb.log({"val_loss": val_stats['loss'],"epoch": epoch})
-        wandb.log({"val_acc": val_stats['acc'],"epoch": epoch})
-
-        train_log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
-                            **{f'val_{k}': v for k, v in val_stats.items()},
-                            'epoch': epoch,
-                            'n_parameters': n_parameters
-                            }
-
-        if args.output_dir and misc.is_main_process():
-            if log_writer is not None:
-                log_writer.flush()
-            with open(os.path.join(args.output_dir, args.save_dir,"log.txt"), mode="a", encoding="utf-8") as f:
-                f.write(json.dumps(train_log_stats) + "\n")
+            print('-' * 30)
+            print('best_epoch:', best_epoch)
+            print(f'max_accuracy: {max_accuracy:.4f}')
+            print('-' * 30,'\n')
 
         if stop > args.early_stop:
             break
@@ -649,29 +640,30 @@ def main(args):
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training completed in {} \n'.format(total_time_str))
 
+    # Finish training, use the best model to do testing
+    print('-' * 30)
     print(f"Number of test images: {len(dataset_test)}")
+    print('-' * 30)
     test_stats = evaluate('test', data_loader_test, model_best, device)
+
     test_log_stats = {**{f'test_{k}': v for k, v in test_stats.items()},
-                    'Total epoch': epoch,
-                    'Best epoch': best_epoch,
-                    'Best val_acc':  max_accuracy,
-                    'Training time': total_time_str
+                    'best_epoch': best_epoch,
+                    'best_val_acc':  max_accuracy,
+                    'training_time': total_time_str
                     }
-    print(test_log_stats)
+    logger.info(test_log_stats)
 
-    wandb.run.summary['test_acc'] = test_stats["acc"]
     wandb.run.summary['test_loss'] = test_stats["loss"]
-    wandb.run.summary['test_f1'] = test_stats["f1"]
+    wandb.run.summary['test_acc'] = test_stats["acc"]
     wandb.run.summary['test_auc'] = test_stats["auc"]
-    wandb.run.summary['CM(tn,fp,fn,tp)'] = test_stats["CM(tn,fp,fn,tp)"]
-    wandb.run.summary['Total_epoch'] = epoch
-    wandb.run.summary['num_params'] = n_parameters / 1.e6
-    wandb.run.summary['Training_time'] = total_time_str
-
-    with open(os.path.join(args.output_dir, args.save_dir,"log.txt"), mode="a", encoding="utf-8") as f:
-        f.write(json.dumps(test_log_stats) + "\n")
+    wandb.run.summary['test_f1'] = test_stats["f1"]
+    wandb.run.summary['test_CM(tn,fp,fn,tp)'] = test_stats["CM(tn,fp,fn,tp)"]
+    wandb.run.summary['best_epoch'] = best_epoch
+    wandb.run.summary['best_val_acc'] = max_accuracy
+    wandb.run.summary['n_parameters'] = n_parameters / 1.e6
+    wandb.run.summary['training_time'] = total_time_str
     
-    os.remove(os.path.join(args.output_dir, args.save_dir,'checkpoint-best.pth')) # not to save every checkpoint for wandb sweep runs in order to save device storage space
+    os.remove(os.path.join(args.output_dir, args.save_dir,'checkpoint-best.pth')) # not to save every fine-tuning checkpoint for wandb sweep runs in order to save device storage space
 
 if __name__ == '__main__':
     args = get_args_parser()
@@ -699,7 +691,6 @@ if __name__ == '__main__':
             print('PERFORM PARTIAL FINE-TUNING.')
             args.tag = 'PFT'
             run.tags = run.tags + ('PFT',)
-
 
     if args.output_dir and not args.test:
         if args.tag == 'TFS':
