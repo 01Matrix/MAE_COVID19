@@ -223,7 +223,6 @@ def partial_ft(flag_attn,flag_mlp,flag_norm1,flag_norm2,flag_bias,model):
     #复制某一层的权重
     # model.state_dict()["model.blocks[0].mlp.fc1.weight"].copy_(model.state_dict()["model.blocks[1].mlp.fc1.weight"]) 
 
-
     if flag_attn:
         print('AND Finetune ATTENTION part.')
         for block in model.blocks[-1:]:
@@ -348,8 +347,8 @@ def freeze_blocks(frozen_blocks,model):
         p.requires_grad = True
 
 def main(args):
-    
-    args.distributed = False # misc.init_distributed_mode(args) # use one single GPU
+
+    misc.init_distributed_mode(args)
     
     print('job dir: {}'.format(os.path.dirname(os.path.realpath(__file__))))
     print("{}".format(args).replace(', ', ',\n'))
@@ -360,12 +359,12 @@ def main(args):
     # fix the seed for reproducibility
     seed = args.seed + misc.get_rank()
     print('actual seed:',seed)
-    set_seed(args.seed)
+    set_seed(seed)
 
     dataset_train,dataset_val,dataset_test = data_loader_COVID19.load_finetune(args)
 
     if args.distributed:
-        print('distributed')
+        print('Using distributed mode')
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
         sampler_train = torch.utils.data.DistributedSampler(
@@ -385,12 +384,12 @@ def main(args):
             sampler_val = torch.utils.data.SequentialSampler(dataset_val)
             sampler_test = torch.utils.data.SequentialSampler(dataset_test)
     else:
+        global_rank = misc.get_rank()
         sampler_train = torch.utils.data.RandomSampler(dataset_train)
         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
         sampler_test = torch.utils.data.SequentialSampler(dataset_test)
 
-    # if global_rank == 0 and not args.test:
-    if not args.test:
+    if global_rank == 0 and not args.test:
         logger.add(os.path.join(args.output_dir, args.save_dir,"loguru_log.txt"))
 
     data_loader_train = torch.utils.data.DataLoader(
@@ -615,7 +614,6 @@ def main(args):
 
         if args.output_dir and misc.is_main_process():
             logger.info(train_log_stats)
-            logger.info('\n')
 
         # To determine when to stop early
         if val_stats["acc"] >= max_accuracy:
@@ -663,7 +661,7 @@ def main(args):
     wandb.run.summary['n_parameters'] = n_parameters / 1.e6
     wandb.run.summary['training_time'] = total_time_str
     
-    os.remove(os.path.join(args.output_dir, args.save_dir,'checkpoint-best.pth')) # not to save every fine-tuning checkpoint for wandb sweep runs in order to save device storage space
+    # os.remove(os.path.join(args.output_dir, args.save_dir,'checkpoint-best.pth')) # not to save every fine-tuning checkpoint for wandb sweep runs in order to save device storage space
 
 if __name__ == '__main__':
     args = get_args_parser()

@@ -268,6 +268,6 @@ def load_pretrain(args, transform):
                 lines = f.readlines()
                 for line in lines:
                     train_list.append(line)
-    np.random.shuffle(train_list)
+    # np.random.shuffle(train_list) # distributed sampler 已经有了shuffle,这里不需要
     trainset = CovidCTDataset(train_list,transform=transform_dict['train'])
     return trainset
