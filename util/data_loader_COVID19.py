@@ -21,7 +21,7 @@ def read_txt(txt_path):
     txt_data = [line.strip() for line in lines]
     return txt_data
 
-class CovidCTDataset(Dataset):
+class COVID_CTDataset(Dataset):
     def __init__(self, data_list, transform=None):
         """
         Args:
@@ -178,9 +178,9 @@ def load_linprobe(args):
     NonCOVID_pth='{}/non-COVID.txt'.format(dataset_name[args.tar])
     train_list,val_list,test_list = split_list(COVID_pth, NonCOVID_pth,args)
     
-    trainset = CovidCTDataset(train_list,transform=transform_dict['train'])
-    valset = CovidCTDataset(val_list,transform=transform_dict['val'])
-    testset = CovidCTDataset(test_list,transform=transform_dict['val'])
+    trainset = COVID_CTDataset(train_list,transform=transform_dict['train'])
+    valset = COVID_CTDataset(val_list,transform=transform_dict['val'])
+    testset = COVID_CTDataset(test_list,transform=transform_dict['val'])
 
     return trainset, valset, testset
 
@@ -205,9 +205,9 @@ def load_finetune(args):
     NonCOVID_pth='{}/non-COVID.txt'.format(dataset_name[args.tar])
     train_list,val_list,test_list = split_list(COVID_pth, NonCOVID_pth,args)
     
-    trainset = CovidCTDataset(train_list,transform=transform_dict['train'])
-    valset = CovidCTDataset(val_list,transform=transform_dict['val'])
-    testset = CovidCTDataset(test_list,transform=transform_dict['test'])
+    trainset = COVID_CTDataset(train_list,transform=transform_dict['train'])
+    valset = COVID_CTDataset(val_list,transform=transform_dict['val'])
+    testset = COVID_CTDataset(test_list,transform=transform_dict['test'])
 
     return trainset, valset, testset
 
@@ -269,5 +269,5 @@ def load_pretrain(args, transform):
                 for line in lines:
                     train_list.append(line)
     # np.random.shuffle(train_list) # distributed sampler 已经有了shuffle,这里不需要
-    trainset = CovidCTDataset(train_list,transform=transform_dict['train'])
+    trainset = COVID_CTDataset(train_list,transform=transform_dict['train'])
     return trainset

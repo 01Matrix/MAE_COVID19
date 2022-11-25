@@ -18,6 +18,7 @@ import time
 from pathlib import Path
 import wandb
 import torch
+from loguru import logger
 import torch.backends.cudnn as cudnn
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.transforms as transforms
@@ -130,6 +131,7 @@ def main(args):
 
     # fix the seed for reproducibility
     seed = args.seed + misc.get_rank()
+    print('actual seed:',seed)
     torch.manual_seed(seed)
     np.random.seed(seed)
 
@@ -145,12 +147,15 @@ def main(args):
             transforms.Normalize(mean=[0.4302, 0.4302, 0.4302], std=[0.3162, 0.3162, 0.3162])
             ])
     dataset_train = data_loader_COVID19.load_pretrain(args, transform_train)
-    print('*Num of training samples',len(dataset_train))
+    print('-'*30)
+    print('Num of training samples',len(dataset_train))
+    print('-'*30,'\n')
 
-    if True:  # args.distributed:
+    if args.distributed:
+        print('Using distributed mode')
         num_tasks = misc.get_world_size()
         global_rank = misc.get_rank()
-        print('*global_rank:',global_rank)
+        print('global_rank:',global_rank)
         sampler_train = torch.utils.data.DistributedSampler(
             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
         )
@@ -160,10 +165,7 @@ def main(args):
         sampler_train = torch.utils.data.RandomSampler(dataset_train)
 
     if global_rank == 0 and args.log_dir is not None:
-        # os.makedirs(args.log_dir, exist_ok=True)
-        log_writer = SummaryWriter(log_dir=os.path.join(args.output_dir,args.save_dir))
-    else:
-        log_writer = None
+        logger.add(os.path.join(args.output_dir, args.save_dir,"pretrain_log.txt"))
 
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, sampler=sampler_train,
@@ -171,6 +173,7 @@ def main(args):
         num_workers=args.num_workers,
         pin_memory=args.pin_mem,
         drop_last=True,
+        prefetch_factor=2
     )
     
     # define the model
@@ -181,7 +184,7 @@ def main(args):
     model_without_ddp = model
     # print("Model = %s" % str(model_without_ddp))
 
-    print('world_size',misc.get_world_size())
+    print('world_size:',misc.get_world_size())
     eff_batch_size = args.batch_size * args.accum_iter * misc.get_world_size()
     
     if args.lr is None:  # only base_lr is specified
@@ -194,10 +197,8 @@ def main(args):
     print("effective batch size: %d" % eff_batch_size)
 
     if args.distributed:
-        print('distributed')
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=False) #find_unused_parameters=True
         model_without_ddp = model.module
-
 
     # model_without_ddp freeze encoder
     # if args.freeze_epochs > 0:
@@ -229,7 +230,6 @@ def main(args):
         train_stats = train_one_epoch(
             model, data_loader_train,
             optimizer, device, epoch, loss_scaler,
-            log_writer=log_writer,
             args=args
         )
         if args.output_dir and (epoch % 10 == 0 or epoch + 1 == args.epochs):
@@ -237,32 +237,25 @@ def main(args):
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
 
+        # wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
+        # wandb.log({"train_lr": train_stats['lr'],"epoch": epoch})
+        
         log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
                         'epoch': epoch,}
 
-        # wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
-        # wandb.log({"train_lr": train_stats['lr'],"epoch": epoch})
-
-        if args.output_dir:
-            if log_writer is not None:
-                log_writer.flush()
-            with open(os.path.join(args.output_dir, args.save_dir,"pretrain_log.txt"), mode="a", encoding="utf-8") as f:
-                f.write(json.dumps(log_stats) + "\n")
+        if args.output_dir and misc.is_main_process():
+            logger.info(log_stats)
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
-    
 
 if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
-    # os.environ["WANDB_RUN_GROUP"] = "experiment-" + wandb.util.generate_id()
-    # group_id = os.environ["WANDB_RUN_GROUP"]
-    # os.environ["WANDB_DIR"] = os.path.abspath("/sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19/soft_link_health/MAE_COVID19_output")
     # wandb.login(key='67458076cf34cba4e7e14f4e7a3e35b074351b4c',timeout=30)
     # wandb.init(config = args, project="MAE_COVID19_pretrain_jiuding", entity="bluedynamic", \
-            # dir=args.output_dir, group="DDP",job_type=f"{args.jobtype}",settings=wandb.Settings(start_method='fork'))
+    #         dir=args.output_dir, group="DDP",job_type=f"{args.jobtype}",settings=wandb.Settings(start_method='fork'))
     if args.model == 'mae_vit_base_patch16':
         TAG = 'base'
     elif args.model == 'mae_vit_large_patch16':
