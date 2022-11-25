@@ -1,9 +1,7 @@
+
 entity: bluedynamic
-method: bayes
-metric: # 衡量目标
-  goal: maximize
-  name: test_acc
-name: CXC_mae_pretrain_vit_base_justvarayblr
+method: grid
+name: inter_cxc_mae_pretrain_vit_base_optimal_hyper
 parameters:
   model: 
     value: vit_base_patch16
@@ -14,26 +12,25 @@ parameters:
   batch_size:
     value: 16
   blr: 
-    distribution: uniform
-    max: 0.01
-    min: 0.00001
+    value: 0.0005506357621634797
   cutmix:
-    value: 1.0
+    value: 0.00538308471580673
   drop_path:
-    value: 0.1
+    value: 0.026367406504767543
   layer_decay:
-    value: 0.65
+    value: 0.9068102076825664
   mixup:
-    value: 0.8
+    value: 0.15098313481301515
   reprob:
-    value: 0.25
+    value: 0.8030262153894294
   weight_decay:
-    value: 0.05
+    value: 0.36236134458377034
   seed:
-    value: 42
+    values: [0,1,2,3,4,5,6,7,8,9,10,42]
+
   finetune:
     values:
-    - /home/hwxiao/medical_pretrained_models/MAE/CXC_mae_pretrain_vit_base.pth
+    - /home/hwxiao/medical_pretrained_models/inter_model/inter_CXC_8:1:1_data13_mae_vit_base.pth
   split_ratio:
     values:
     # - '0.1:4.9:5'

@@ -3,17 +3,17 @@ method: bayes
 metric: # 衡量目标
   goal: maximize
   name: test_acc
-name: CXC_mae_pretrain_vit_large_2
+name: cxc_mae_pretrain_vit_base_resume
 parameters:
   model: 
-    value: vit_large_patch16
+    value: vit_base_patch16
   tar:
     values: 
     # - U_sani2
     - U_orig
   batch_size:
     value: 16
-  blr:
+  blr: 
     distribution: uniform
     max: 0.001
     min: 0.0005
@@ -45,7 +45,7 @@ parameters:
     value: 42
   finetune:
     values:
-    - /home/hwxiao/medical_pretrained_models/MAE/CXC_mae_pretrain_vit_large.pth
+    - /home/hwxiao/mycodes/MAE_COVID19/outputs/output_pretrain/base_CXC_pretrain/checkpoint-50.pth
   split_ratio:
     values:
     - '2.0:3.0:5'

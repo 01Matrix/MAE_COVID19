@@ -3,49 +3,37 @@ method: bayes
 metric: # 衡量目标
   goal: maximize
   name: test_acc
-name: CXC_mae_pretrain_vit_large
+name: CXC_mae_pretrain_vit_base_justvaryblr
 parameters:
   model: 
-    value: vit_large_patch16
+    value: vit_base_patch16
   tar:
     values: 
     # - U_sani2
     - U_orig
   batch_size:
     value: 16
-  blr:
+  blr: 
     distribution: uniform
     max: 0.01
     min: 0.00001
   cutmix:
-    distribution: uniform
-    max: 1
-    min: 0
+    value: 1.0
   drop_path:
-    distribution: uniform
-    max: 1
-    min: 0
+    value: 0.1
   layer_decay:
-    distribution: uniform
-    max: 1
-    min: 0
+    value: 0.65
   mixup:
-    distribution: uniform
-    max: 1
-    min: 0
+    value: 0.8
   reprob:
-    distribution: uniform
-    max: 1
-    min: 0
+    value: 0.25
   weight_decay:
-    distribution: uniform
-    max: 1
-    min: 0
+    value: 0.05
   seed:
     value: 42
   finetune:
     values:
-    - /home/hwxiao/medical_pretrained_models/MAE/CXC_mae_pretrain_vit_large.pth
+    - /home/hwxiao/medical_pretrained_models/MAE/CXC_mae_pretrain_vit_base.pth
   split_ratio:
     values:
     # - '0.1:4.9:5'

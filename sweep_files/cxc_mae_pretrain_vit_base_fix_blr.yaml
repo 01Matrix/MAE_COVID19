@@ -1,9 +1,9 @@
 entity: bluedynamic
 method: grid
-name: CXC_mae_pretrain_vit_large
+name: CXC_mae_pretrain_vit_base_optimal_hyper
 parameters:
   model: 
-    value: vit_large_patch16
+    value: vit_base_patch16
   tar:
     values: 
     # - U_sani2
@@ -11,7 +11,7 @@ parameters:
   batch_size:
     value: 16
   blr: 
-    value: 0.001
+    value: 0.0005
   cutmix:
     distribution: uniform
     max: 1
@@ -37,10 +37,10 @@ parameters:
     max: 1
     min: 0
   seed:
-    values: [0,1,2,3,4,5,6,7,8,9,10,42]
+    values: 42
   finetune:
     values:
-    - /home/hwxiao/medical_pretrained_models/MAE/CXC_mae_pretrain_vit_large.pth
+    - /home/hwxiao/medical_pretrained_models/MAE/CXC_mae_pretrain_vit_base.pth
   split_ratio:
     values:
     # - '0.1:4.9:5'

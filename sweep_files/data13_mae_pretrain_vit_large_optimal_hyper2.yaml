@@ -1,0 +1,44 @@
+entity: bluedynamic
+method: grid
+name: data13_mae_pretrain_vit_large_optimal_hyper2
+parameters:
+  model: 
+    value: vit_large_patch16
+  tar:
+    values: 
+    # - U_sani2
+    - U_orig
+  batch_size:
+    value: 16
+  blr: 
+    value: 0.001
+    
+  cutmix:
+    value: 0.0832454846853048
+
+  drop_path:
+    value: 0.06412461783666967
+
+  layer_decay:
+    value: 0.9437037617594808
+
+  mixup:
+    value: 0.8013453515749608
+
+  reprob:
+    value: 0.4879027671055126
+
+  weight_decay:
+    value: 0.8464239330020782
+
+  seed:
+    values: [0,1,2,3,4,5,6,7,8,9,10,42]
+  finetune:
+    values:
+    - /home/hwxiao/medical_pretrained_models/MAE/data13_mae_pretrain_vit_large.pth
+
+  split_ratio:
+    values:
+    - '2.0:3.0:5'
+program: main_finetune_txt_ddp.py
+project: MAE_COVID19_jiuding
