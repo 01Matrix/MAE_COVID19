@@ -18,11 +18,10 @@ import time
 from pathlib import Path
 import wandb
 import torch
-from loguru import logger
 import torch.backends.cudnn as cudnn
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.transforms as transforms
-from datasets.covid_ct_dataset import COVID_CT_Dataset
+# from datasets.covid_ct_dataset import COVID_CT_Dataset
 
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
