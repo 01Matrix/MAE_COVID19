@@ -24,7 +24,7 @@ from pathlib import Path
 import torch
 from torch import nn
 import torch.backends.cudnn as cudnn
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
 import util.data_loader_COVID19 as data_loader_COVID19
 import timm
 assert timm.__version__ == "0.5.4" # version check
@@ -40,6 +40,7 @@ from util.misc import NativeScalerWithGradNormCount as NativeScaler
 import models_vit
 from engine_finetune import train_one_epoch, evaluate
 # import fastfood
+
 
 
 def get_args_parser():
@@ -596,9 +597,9 @@ def main(args):
         print('-' * 30)
         val_stats = evaluate('val',data_loader_val, model, device)
 
-        wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
-        wandb.log({"val_loss": val_stats['loss'],"epoch": epoch})
-        wandb.log({"val_acc": val_stats['acc'],"epoch": epoch})
+        # wandb.log({"train_loss": train_stats['loss'],"epoch": epoch})
+        # wandb.log({"val_loss": val_stats['loss'],"epoch": epoch})
+        # wandb.log({"val_acc": val_stats['acc'],"epoch": epoch})
         # wandb.log({"val_auc": val_stats['auc'],"epoch": epoch})
         # wandb.log({"val_f1": val_stats['f1'],"epoch": epoch})
         # wandb.log({"val_pre": val_stats['pre'],"epoch": epoch})
@@ -651,15 +652,15 @@ def main(args):
                     }
     logger.info(test_log_stats)
 
-    wandb.run.summary['test_loss'] = test_stats["loss"]
-    wandb.run.summary['test_acc'] = test_stats["acc"]
-    wandb.run.summary['test_auc'] = test_stats["auc"]
-    wandb.run.summary['test_f1'] = test_stats["f1"]
-    wandb.run.summary['test_CM(tn,fp,fn,tp)'] = test_stats["CM(tn,fp,fn,tp)"]
-    wandb.run.summary['best_epoch'] = best_epoch
-    wandb.run.summary['best_val_acc'] = max_accuracy
-    wandb.run.summary['n_parameters'] = n_parameters / 1.e6
-    wandb.run.summary['training_time'] = total_time_str
+    # wandb.run.summary['test_loss'] = test_stats["loss"]
+    # wandb.run.summary['test_acc'] = test_stats["acc"]
+    # wandb.run.summary['test_auc'] = test_stats["auc"]
+    # wandb.run.summary['test_f1'] = test_stats["f1"]
+    # wandb.run.summary['test_CM(tn,fp,fn,tp)'] = test_stats["CM(tn,fp,fn,tp)"]
+    # wandb.run.summary['best_epoch'] = best_epoch
+    # wandb.run.summary['best_val_acc'] = max_accuracy
+    # wandb.run.summary['n_parameters'] = n_parameters / 1.e6
+    # wandb.run.summary['training_time'] = total_time_str
     
     # os.remove(os.path.join(args.output_dir, args.save_dir,'checkpoint-best.pth')) # not to save every fine-tuning checkpoint for wandb sweep runs in order to save device storage space
 
@@ -670,25 +671,25 @@ if __name__ == '__main__':
     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 
     # os.environ["WANDB_DIR"] = os.path.abspath(args.output_dir)
-    run = wandb.init(config = args, project="MAE_COVID19_jiuding", entity="bluedynamic",dir=args.output_dir,settings=wandb.Settings(start_method="fork"))
+    # run = wandb.init(config = args, project="MAE_COVID19_jiuding", entity="bluedynamic",dir=args.output_dir,settings=wandb.Settings(start_method="fork"))
 
     if not args.finetune:
         print('Train from scratch with ViT.')
         args.tag = 'TFS'
-        run.tags = run.tags + ('TFS',)
+        # run.tags = run.tags + ('TFS',)
     else:
         if (not args.attn and not args.mlp and not args.norm1 and not args.norm2 and not args.bias) and args.frozen_blocks == 0:
             print('PERFORM FULL FINE-TUNING with/without re-initializing.')
             args.tag = 'FFT'
-            run.tags = run.tags + ('FFT',)
+            # run.tags = run.tags + ('FFT',)
         elif (not args.attn and not args.mlp and not args.norm1 and not args.norm2 and not args.bias) and args.frozen_blocks > 0 and args.reinit_blocks == 0:
             print('PERFORM block-wise FREEZING.')
             args.tag = 'PFR'
-            run.tags = run.tags + ('PFR',)
+            # run.tags = run.tags + ('PFR',)
         else:
             print('PERFORM PARTIAL FINE-TUNING.')
             args.tag = 'PFT'
-            run.tags = run.tags + ('PFT',)
+            # run.tags = run.tags + ('PFT',)
 
     if args.output_dir and not args.test:
         if args.tag == 'TFS':

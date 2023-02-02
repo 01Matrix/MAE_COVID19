@@ -1,1 +1,1 @@
-from main_finetune_txt_ddp import set_seed
+from main_finetune import set_seed
