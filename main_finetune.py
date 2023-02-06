@@ -703,4 +703,10 @@ if __name__ == '__main__':
                 + '_d' +str(round(args.drop_path,4)) + '_r' +str(round(args.reprob,4)) + '_m' +str(round(args.mixup,4)) + '_c' +str(round(args.cutmix,4)) \
                 + '_rb' +str(args.reinit_blocks) + '_fb' +str(args.frozen_blocks) + '_attn' + str(args.attn) + '_mlp' + str(args.mlp) + '_bias' + str(args.bias) + '_' + args.tag)
             Path(args.output_dir,args.save_dir).mkdir(parents=True, exist_ok=True)# parents：如果父目录不存在，是否创建父目录；exist:只有在目录不存在时创建目录，目录已存在时不会抛出异常。
+    else:
+        args.save_dir = os.path.join('output_test','test_with_'+os.path.basename(args.finetune).strip('.pth'), args.split_ratio.strip(), args.tar + '_seed' + str(args.seed) \
+                + '_bs' +str(args.batch_size) + '_b' +str(round(args.blr,5)) + '_l' +str(round(args.layer_decay,4)) + '_w' +str(round(args.weight_decay,4)) \
+                + '_d' +str(round(args.drop_path,4)) + '_r' +str(round(args.reprob,4)) + '_m' +str(round(args.mixup,4)) + '_c' +str(round(args.cutmix,4)) \
+                + '_rb' +str(args.reinit_blocks) + '_fb' +str(args.frozen_blocks) + '_attn' + str(args.attn) + '_mlp' + str(args.mlp) + '_bias' + str(args.bias) + '_' + args.tag)
+        Path(args.output_dir,args.save_dir).mkdir(parents=True, exist_ok=True)# parents：如果父目录不存在，是否创建父目录；exist:只有在目录不存在时创建目录，目录已存在时不会抛出异常。
     main(args)
