@@ -22,7 +22,7 @@ python submitit_pretrain.py \
 
 To train ViT-Base or ViT-Huge, set `--model mae_vit_base_patch16` or `--model mae_vit_huge_patch14`.
 
-rlaunch --cpu=24 --gpu=4 --memory=64000 -- torchrun --nnodes=1 --nproc_per_node=4 main_pretrain_ddp.py --batch_size=32 --norm_pix_loss --blr 1.5e-4 --weight_decay 0.05 --mask_ratio 0.75 --epochs 1400 --warmup_epochs 40 --dataset C_orig --resume /sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain/C_orig_pretrain/checkpoint-860.pth
+rlaunch --cpu=24 --gpu=4 --memory=64000 -- torchrun --nnodes=1 --nproc_per_node=4 main_pretrain.py --batch_size=32 --norm_pix_loss --blr 1.5e-4 --weight_decay 0.05 --mask_ratio 0.75 --epochs 1400 --warmup_epochs 40 --dataset C_orig --resume /sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain/C_orig_pretrain/checkpoint-860.pth
 
 rlaunch --cpu=4 --gpu=1 --memory=8000 -- wandb agent bluedynamic/MAE_COVID19_2/6hjj0c71 
 rlaunch --cpu=4 --gpu=1 --memory=8000 -- wandb agent bluedynamic/MAE_COVID19_2/ls07sozu   
