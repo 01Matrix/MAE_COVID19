@@ -46,7 +46,7 @@ echo "RLAUNCH_REPLICA_TOTAL: $RLAUNCH_REPLICA_TOTAL"
 # gpu_num=`nvidia-smi | grep "V100\|A100" | wc -l`
 # train_epoch_len=`expr 5000 \* ${gpu_num}`
 
-WORLD_SIZE=16 RANK=$RLAUNCH_REPLICA MASTER_ADDR=$MASTER_ADDR MASTER_PORT=12345 python main_pretrain_ddp.py \
+WORLD_SIZE=16 RANK=$RLAUNCH_REPLICA MASTER_ADDR=$MASTER_ADDR MASTER_PORT=12345 python main_pretrain.py \
     --batch_size 64 \
     --local_rank 0 \
     --norm_pix_loss \

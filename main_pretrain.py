@@ -19,7 +19,7 @@ from pathlib import Path
 import wandb
 import torch
 import torch.backends.cudnn as cudnn
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
 import torchvision.transforms as transforms
 # from datasets.covid_ct_dataset import COVID_CT_Dataset
 
@@ -123,6 +123,7 @@ def get_args_parser():
     return parser
 
 def main(args):
+    
     # initialize PyTorch distributed using environment variables
     misc.init_distributed_mode(args)
 
@@ -162,7 +163,8 @@ def main(args):
         print("Sampler_train = %s" % str(sampler_train))
     else:
         sampler_train = torch.utils.data.RandomSampler(dataset_train)
-
+    
+    global_rank = misc.get_rank()
     if global_rank == 0 and args.log_dir is not None:
         logger.add(os.path.join(args.output_dir, args.save_dir,"pretrain_log.txt"))
 
@@ -177,7 +179,7 @@ def main(args):
     
     # define the model
     model = models_mae.__dict__[args.model](norm_pix_loss=args.norm_pix_loss)
-
+    
     model.to(device)
 
     model_without_ddp = model
@@ -206,7 +208,7 @@ def main(args):
     #             param[1].requires_grad = False
     # following timm: set wd as 0 for bias and norm layers
     param_groups = optim_factory.add_weight_decay(model_without_ddp, args.weight_decay)
-    optimizer = torch.optim.AdamW(param_groups, lr=args.lr, betas=(0.9, 0.95))
+    optimizer = torch.optim.AdamW(param_groups, lr=args.lr, eps=1e-04, betas=(0.9, 0.95))
     print(optimizer)
     loss_scaler = NativeScaler()
 
@@ -214,7 +216,7 @@ def main(args):
 
     print(f"Start training for {args.epochs} epochs")
     start_time = time.time()
-
+    
     for epoch in range(args.start_epoch, args.epochs):
         # unfreeze encoder of model_without_ddp
         # if epoch == args.freeze_epochs:

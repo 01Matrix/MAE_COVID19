@@ -43,9 +43,9 @@ echo "RLAUNCH_REPLICA: $RLAUNCH_REPLICA"
 echo "RLAUNCH_REPLICA_TOTAL: $RLAUNCH_REPLICA_TOTAL"
 echo "JOB_NAME: $JOB_NAME"
 
-# OMP_NUM_THREADS=1 torchrun --nnodes=2 --nproc_per_node=8 --max_restarts=3 --rdzv_id=100 --rdzv_backend=c10d --rdzv_endpoint=$MASTER_ADDR:29400 main_pretrain_ddp_test.py \
-# OMP_NUM_THREADS=1 torchrun --nnodes=1:2 --nproc_per_node=8 --max_restarts=3 --rdzv_id=100 --rdzv_backend=c10d --rdzv_endpoint=$MASTER_ADDR:29400 main_pretrain_ddp_test.py \
-OMP_NUM_THREADS=1 torchrun --nnodes=2 --node_rank=$RLAUNCH_REPLICA --nproc_per_node=8 --master_addr=$MASTER_ADDR --master_port=29400 main_pretrain_ddp.py \
+# OMP_NUM_THREADS=1 torchrun --nnodes=2 --nproc_per_node=8 --max_restarts=3 --rdzv_id=100 --rdzv_backend=c10d --rdzv_endpoint=$MASTER_ADDR:29400 main_pretrain_test.py \
+# OMP_NUM_THREADS=1 torchrun --nnodes=1:2 --nproc_per_node=8 --max_restarts=3 --rdzv_id=100 --rdzv_backend=c10d --rdzv_endpoint=$MASTER_ADDR:29400 main_pretrain_test.py \
+OMP_NUM_THREADS=1 torchrun --nnodes=2 --node_rank=$RLAUNCH_REPLICA --nproc_per_node=8 --master_addr=$MASTER_ADDR --master_port=29400 main_pretrain.py \
     --dist_url="tcp://${MASTER_ADDR}:29400" \
     --jobtype data36 \
     --batch_size 128 \

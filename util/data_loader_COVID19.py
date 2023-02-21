@@ -9,7 +9,7 @@ import torchvision.transforms.functional as F
 from timm.data import create_transform
 from torchvision.transforms import InterpolationMode
 import numpy as np
-from main_finetune_txt_ddp import set_seed
+from main_finetune import set_seed
 from torch.utils.data import Dataset
 from PIL import Image
 from util.crop import RandomResizedCrop
@@ -65,7 +65,7 @@ class COVID_CTDataset(Dataset):
             image = self.transform(image)
         label = int(self.img_list[idx][1])
         label = torch.tensor(int(label))
-        return image, label
+        return image, label, img_path
 
 def split_list(COVID_pth,NonCOVID_pth,args):
     f1 = open(COVID_pth,'r')
@@ -240,7 +240,7 @@ def load_pretrain(args, transform):
                     'CCXD':f'{args.data_path}/selected4pretrain/COVID-nonCT/Coronahack-Chest-XRay-Dataset',
                     'MRC':f'{args.data_path}/selected4pretrain/COVID-nonCT/MIDRC-RICORD-1C',
                     'CHEXD':f'{args.data_path}/selected4pretrain/COVID-nonCT/covid-chestxray-dataset',
-                    'CHAOSCT':f'{args.data_path}/selected4pretrain/Others-CT/CHAOS/',
+                    'CHAOSCT':f'{args.data_path}/selected4pretrain/Others-CT/CHAOS',
                     'DL':f'{args.data_path}/selected4pretrain/Others-CT/DeepLesion/Images_png',
                     'KITS':f'{args.data_path}/selected4pretrain/Others-CT/kits21/kits21/data',
                     'LIDC':f'{args.data_path}/selected4pretrain/Others-CT/LIDC-IDRI',
