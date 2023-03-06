@@ -451,7 +451,7 @@ def main(args):
         checkpoint = torch.load(args.finetune, map_location='cpu')
         logger.info("Load pretrained checkpoint from: %s" % args.finetune)
         if 'CXC_resumed_pretrain' in args.finetune or 'CXC_continual_' in args.finetune or 'data13_mae_pretrain' in args.finetune or 'data14_mae_pretrain' in args.finetune \
-            or 'data21_mae_pretrain' in args.finetune or 'data35_mae_pretrain' in args.finetune \
+            or 'data21_mae_pretrain' in args.finetune or 'data35_mae_pretrain' in args.finetune or 'data36_mae_pretrain' in args.finetune or 'allCT_mae_pretrain' in args.finetune \
             or 'deeplesion_mae_pretrain' in args.finetune or 'chexpert_mae_pretrain' in args.finetune or '7xray_mae_pretrain' in args.finetune \
             or ('checkpoint-' in args.finetune and 'checkpoint-best' not in args.finetune) or 'CXC_mae_pretrain_vit_' in args.finetune:
             logger.info('This is our own medical pretrained model.'.upper())
