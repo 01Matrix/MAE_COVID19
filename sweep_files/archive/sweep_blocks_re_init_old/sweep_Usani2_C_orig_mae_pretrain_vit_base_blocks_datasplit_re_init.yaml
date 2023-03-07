@@ -101,5 +101,5 @@ parameters:
     - '3.8:1.2:5'
     - '3.9:1.1:5'
     - '4.0:1.0:5'
-program: main_finetune_txt_ddp.py
+program: main_finetune_ddp.py
 project: MAE_COVID19_2

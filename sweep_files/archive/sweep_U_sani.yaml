@@ -67,5 +67,5 @@ parameters:
     value: 0.5558
   tar:
     value: U_sani
-program: main_finetune_txt_ddp.py
+program: main_finetune_ddp.py
 project: MAE_COVID19

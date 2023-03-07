@@ -63,5 +63,5 @@ parameters:
     # - '5.7:1.6:2.7'
     # - '6.2:1.2:2.6'
     - '2:3:5'
-program: main_finetune_txt_ddp.py
+program: main_finetune_ddp.py
 project: MAE_COVID19_2

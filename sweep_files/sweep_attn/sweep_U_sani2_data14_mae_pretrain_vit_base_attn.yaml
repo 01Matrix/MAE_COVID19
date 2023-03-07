@@ -100,5 +100,5 @@ parameters:
   mlp:
     values: 
     - true
-program: main_finetune_txt_ddp.py
+program: main_finetune_ddp.py
 project: MAE_COVID19_2

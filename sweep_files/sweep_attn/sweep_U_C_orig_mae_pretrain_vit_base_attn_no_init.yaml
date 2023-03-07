@@ -65,5 +65,5 @@ parameters:
     - '9'
     - '10'
     - '11'
-program: main_finetune_txt_ddp.py
+program: main_finetune_ddp.py
 project: MAE_COVID19_2

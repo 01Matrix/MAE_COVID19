@@ -38,5 +38,5 @@ parameters:
   split_ratio:
     values:
     - '2.0:3.0:5'
-program: main_finetune_txt_ddp.py
+program: main_finetune_ddp.py
 project: MAE_COVID19_jiuding

@@ -62,5 +62,5 @@ parameters:
   split_ratio:
     values:
     - '2:3:5'
-program: main_finetune_txt_ddp_copy.py
+program: main_finetune_copy.py
 project: MAE_COVID19_3

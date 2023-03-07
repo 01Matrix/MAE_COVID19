@@ -107,5 +107,5 @@ parameters:
     value: padding 
   prompt_size:
     values: [5,10,15,20,25,30,35,40,45,50]  
-program: main_finetune_txt_ddp_prompt.py
+program: main_finetune_prompt.py
 project: MAE_COVID19_2

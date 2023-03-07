@@ -62,5 +62,5 @@ parameters:
     values: [0,1,2,3,4,5,6,7,8,9,10,11,12]
   frozen_blocks:
     value: 0
-program: main_finetune_txt_ddp_copy.py
+program: main_finetune_copy.py
 project: MAE_COVID19_3
