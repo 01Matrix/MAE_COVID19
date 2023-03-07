@@ -50,6 +50,7 @@ def get_args_parser():
                         help='Batch size per GPU (effective batch size is batch_size * accum_iter * # gpus')
     parser.add_argument('--epochs', default=1000, type=int)
     parser.add_argument('--early_stop', type=int, default=20)
+    parser.add_argument('--ckpt_save_freq', type=int, default=10)
     parser.add_argument('--accum_iter', default=1, type=int,
                         help='Accumulate gradient iterations (for increasing the effective batch size under memory constraints)')
 
@@ -586,8 +587,8 @@ def main(args):
             args.clip_grad, mixup_fn,
             args=args
         )
-        # Save a checkpoint every 50 epochs
-        if args.output_dir and args.save_all and epoch % 50 == 0:
+        # Save a checkpoint every 'ckpt_save_freq' epochs
+        if args.output_dir and args.save_all and epoch % args.ckpt_save_freq == 0:
             misc.save_model(
                 args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                 loss_scaler=loss_scaler, epoch=epoch)
