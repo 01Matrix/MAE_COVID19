@@ -3,6 +3,7 @@ data_loader
 '''
 from glob import glob
 import torch
+import os
 # from random import random, shuffle
 from torchvision import transforms
 import torchvision.transforms.functional as F
@@ -22,7 +23,7 @@ def read_txt(txt_path):
     return txt_data
 
 class COVID_CTDataset(Dataset):
-    def __init__(self, data_list, transform=None):
+    def __init__(self, data_path, data_list, transform=None):
         """
         Args:
             txt_path (string): Path to the txt file with annotations.
@@ -42,6 +43,7 @@ class COVID_CTDataset(Dataset):
         """
         self.transform = transform
         self.img_list = [item.split('\t') for item in data_list]
+        self.data_path = data_path
 
     def __len__(self):
         return len(self.img_list)
@@ -50,7 +52,8 @@ class COVID_CTDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        img_path = self.img_list[idx][0]
+        img_path = os.path.join(self.data_path, self.img_list[idx][0])
+
         while True:
             try:
                 image = Image.open(img_path).convert('RGB')
@@ -178,9 +181,9 @@ def load_linprobe(args):
     NonCOVID_pth='{}/non-COVID.txt'.format(dataset_name[args.tar])
     train_list,val_list,test_list = split_list(COVID_pth, NonCOVID_pth,args)
     
-    trainset = COVID_CTDataset(train_list,transform=transform_dict['train'])
-    valset = COVID_CTDataset(val_list,transform=transform_dict['val'])
-    testset = COVID_CTDataset(test_list,transform=transform_dict['val'])
+    trainset = COVID_CTDataset(dataset_name[args.tar], train_list,transform=transform_dict['train'])
+    valset = COVID_CTDataset(dataset_name[args.tar], val_list,transform=transform_dict['val'])
+    testset = COVID_CTDataset(dataset_name[args.tar], test_list,transform=transform_dict['val'])
 
     return trainset, valset, testset
 
@@ -205,9 +208,9 @@ def load_finetune(args):
     NonCOVID_pth='{}/non-COVID.txt'.format(dataset_name[args.tar])
     train_list,val_list,test_list = split_list(COVID_pth, NonCOVID_pth,args)
     
-    trainset = COVID_CTDataset(train_list,transform=transform_dict['train'])
-    valset = COVID_CTDataset(val_list,transform=transform_dict['val'])
-    testset = COVID_CTDataset(test_list,transform=transform_dict['test'])
+    trainset = COVID_CTDataset(dataset_name[args.tar], train_list,transform=transform_dict['train'])
+    valset = COVID_CTDataset(dataset_name[args.tar], val_list,transform=transform_dict['val'])
+    testset = COVID_CTDataset(dataset_name[args.tar], test_list,transform=transform_dict['test'])
 
     return trainset, valset, testset
 
@@ -269,5 +272,5 @@ def load_pretrain(args, transform):
                 for line in lines:
                     train_list.append(line)
     # np.random.shuffle(train_list) # distributed sampler 已经有了shuffle,这里不需要
-    trainset = COVID_CTDataset(train_list,transform=transform_dict['train'])
+    trainset = COVID_CTDataset(dataset_name[args.tar], train_list,transform=transform_dict['train'])
     return trainset

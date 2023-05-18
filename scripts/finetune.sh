@@ -1,10 +1,10 @@
 #!/bin/bash
 
 batch_size=$1
-model_size=large
+model_size=$2
 model=vit_${model_size}_patch16
-tar=$2
-split_ratio=$3
+tar=$3
+split_ratio=$4
 # finetune=/home/hwxiao/medical_pretrained_models/MAE/mae_pretrain_vit_${model_size}.pth
 # finetune=/home/hwxiao/medical_pretrained_models/MAE/data13_mae_pretrain_vit_${model_size}.pth
 # finetune=/home/hwxiao/medical_pretrained_models/MAE/data14_mae_pretrain_vit_${model_size}.pth
@@ -13,14 +13,14 @@ split_ratio=$3
 # finetune=/home/hwxiao/medical_pretrained_models/MAE/allCT_mae_pretrain_vit_${model_size}.pth
 # finetune=/home/hwxiao/medical_pretrained_models/MAE/CXC_mae_pretrain_vit_${model_size}.pth
 
-# finetune=/home/hwxiao/medical_pretrained_models/inter_model/inter_CXC_8:1:1_mae_pretrain_vit_${model_size}.pth
+finetune=/home/hwxiao/medical_pretrained_models/inter_model/inter_CXC_8:1:1_mae_pretrain_vit_${model_size}.pth
 # finetune=/home/hwxiao/medical_pretrained_models/inter_model/inter_CXC_8:1:1_data13_mae_vit_${model_size}.pth
-finetune=/home/hwxiao/medical_pretrained_models/inter_model/inter_CXC_8:1:1_data36_mae_vit_${model_size}.pth
+# finetune=/home/hwxiao/medical_pretrained_models/inter_model/inter_CXC_8:1:1_data36_mae_vit_${model_size}.pth
 
 # finetune=/home/hwxiao/medical_pretrained_models/TFS_model/CXC_8:1:1_vit_b_16.pth
 # finetune=/home/hwxiao/medical_pretrained_models/TFS_model/CXC_8:1:1_vit_l_16.pth
 
-OMP_NUM_THREADS=1 torchrun --nnodes=1 --nproc_per_node=$4 main_finetune.py \
+OMP_NUM_THREADS=1 torchrun --nnodes=1 --nproc_per_node=$5 main_finetune.py \
         --model ${model} \
         --save_all \
         --batch_size ${batch_size} \
