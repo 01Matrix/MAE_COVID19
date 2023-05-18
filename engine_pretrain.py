@@ -34,19 +34,26 @@ def train_one_epoch(model: torch.nn.Module,
 
     optimizer.zero_grad()
 
-    for data_iter_step, (samples, _) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+    for data_iter_step, (samples, _, img_name) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         # we use a per iteration (instead of per epoch) lr scheduler
         if data_iter_step % accum_iter == 0:
             lr_sched.adjust_learning_rate(optimizer, data_iter_step / len(data_loader) + epoch, args)
 
         samples = samples.to(device, non_blocking=True)
+        # print('1111',samples.dtype)
+
 
         with torch.cuda.amp.autocast():
+            # samples = samples.float()
+            # print('2222',samples.dtype)
             loss, _, _ = model(samples, mask_ratio=args.mask_ratio)
 
+        # print(loss.dtype)
+        # print('loss3:',loss)
         loss_value = loss.item()
-
+        
         if not math.isfinite(loss_value):
+            print('The nan Image name is:', img_name)
             print("Loss is {}, stopping training".format(loss_value))
             sys.exit(1)
 

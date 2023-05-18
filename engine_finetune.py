@@ -46,7 +46,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
     optimizer.zero_grad()
 
-    for data_iter_step, (samples, targets) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+    for data_iter_step, (samples, targets, _) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
             
         # we use a per iteration (instead of per epoch) lr scheduler
         if data_iter_step % accum_iter == 0:
@@ -94,8 +94,8 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             epoch_1000x = int((data_iter_step / len(data_loader) + epoch) * 1000)
             # log_writer.add_scalar('loss', loss_value_reduce, epoch_1000x)
             # log_writer.add_scalar('lr', max_lr, epoch_1000x)
-            wandb.log({"loss_value_reduce": loss_value_reduce, "epoch_1000x": epoch_1000x})
-            wandb.log({"max_lr": max_lr, "epoch_1000x": epoch_1000x})
+            # wandb.log({"loss_value_reduce": loss_value_reduce, "epoch_1000x": epoch_1000x})
+            # wandb.log({"max_lr": max_lr, "epoch_1000x": epoch_1000x})
 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
@@ -123,7 +123,7 @@ def evaluate(phase, data_loader, model, device):
 
     for batch in metric_logger.log_every(data_loader, 1, header):
         images = batch[0]
-        target = batch[-1]
+        target = batch[1]
         images = images.to(device, non_blocking=True)
         target = target.to(device, non_blocking=True)
 
