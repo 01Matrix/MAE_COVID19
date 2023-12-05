@@ -254,7 +254,7 @@ def main(args):
 if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
-    # wandb.login(key='67458076cf34cba4e7e14f4e7a3e35b074351b4c',timeout=30)
+    # wandb.login()
     # wandb.init(config = args, project="MAE_COVID19_pretrain_jiuding", entity="bluedynamic", \
     #         dir=args.output_dir, group="DDP",job_type=f"{args.jobtype}",settings=wandb.Settings(start_method='fork'))
     if args.model == 'mae_vit_base_patch16':
