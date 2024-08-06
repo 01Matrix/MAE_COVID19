@@ -1,4 +1,4 @@
-## MAE fine-tuning for Few-sample COVID-19 Detection
+## Pre-trained Natural Image Models are Few-shot Learners for Medical Image Classification: COVID-19 Diagnosis as an Example
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/11435359/146857310-f258c86c-fde6-48e8-9cee-badd2b21bd2c.png" width="480">
