@@ -1,19 +1,19 @@
 ## Pre-trained Natural Image Models are Few-shot Learners for Medical Image Classification: COVID-19 Diagnosis as an Example
 
+This repository contains the code for the paper "Pre-trained Natural Image Models are Few-shot Learners for Medical Image Classification: COVID-19 Diagnosis as an Example".
+
+Visualization Demo:
+
+(1) C14_pretrain_model:
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/11435359/146857310-f258c86c-fde6-48e8-9cee-badd2b21bd2c.png" width="480">
+  <img src="./demo/C14_pretrain_model.png" width="600">
 </p>
 
+(2) C1000_pretrain_model:
+<p align="center">
+  <img src="./demo/C1000_pretrain_model.png" width="600">
+</p>
 
-This is done on top of PyTorch/GPU re-implementation of the paper [Masked Autoencoders Are Scalable Vision Learners](https://arxiv.org/abs/2111.06377):
-```
-@Article{MaskedAutoencoders2021,
-  author  = {Kaiming He and Xinlei Chen and Saining Xie and Yanghao Li and Piotr Doll{\'a}r and Ross Girshick},
-  journal = {arXiv:2111.06377},
-  title   = {Masked Autoencoders Are Scalable Vision Learners},
-  year    = {2021},
-}
-```
 
 * 111
 * 111
@@ -24,12 +24,6 @@ This is done on top of PyTorch/GPU re-implementation of the paper [Masked Autoen
 - [x] Pre-trained checkpoints + fine-tuning code
 - [x] Pre-training code
 
-### Visualization demo
-
-MAE visualization:
-<p align="center">
-  <img src="./demo/C14_pretrain_model.png" width="600">
-</p>
 
 ### Fine-tuning with pre-trained checkpoints
 
