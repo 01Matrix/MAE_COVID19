@@ -132,7 +132,7 @@ The pre-training recipes are in [PRETRAIN.md](PRETRAIN.md).
 <tr><td align="left"><a href="">MAE-L/16_IN1K/CXC</a></td><td align="left">ViT-L/16</td><td align="left">MAE-L/16_IN1K</td><td align="center">CXC</td></tr>
 <tr><td align="left"><a href="">MAE-B/16_DATA13/CXC</a></td><td align="left">ViT-B/16</td><td align="left">MAE-B/16_DATA13</td><td align="center">CXC</td></tr>
 <tr><td align="left"><a href="">MAE-B/16_DATA13/CXC</a></td><td align="left">ViT-L/16</td><td align="left">MAE-L/16_DATA13</td><td align="center">CXC</td></tr>
-<tr><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td></tr>
 </tbody>
 </table>
 
