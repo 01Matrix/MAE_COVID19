@@ -15,8 +15,9 @@ Visualization Demo:
 </p>
 
 
-* 111
-* 111
+* This repo is a modification on the DeiT repo. Installation and preparation follow that repo.
+
+* This repo is based on timm==0.3.2, for which a fix is needed to work with PyTorch 1.8.1+.
 
 ### Catalog
 
