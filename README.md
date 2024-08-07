@@ -1,6 +1,6 @@
 # Pre-trained Natural Image Models are Few-shot Learners for Medical Image Classification: COVID-19 Diagnosis as an Example
 
-This repository contains the code for the paper "Pre-trained Natural Image Models are Few-shot Learners for Medical Image Classification: COVID-19 Diagnosis as an Example".
+This repository contains the code and datasets for the paper "Pre-trained Natural Image Models are Few-shot Learners for Medical Image Classification: COVID-19 Diagnosis as an Example". It hleps to direct users to reproduce our reported results.
 
 
 ## Contents
@@ -18,11 +18,11 @@ This repository contains the code for the paper "Pre-trained Natural Image Model
   }
   .image-container img {
     width: 100%;
-    max-width: 600px; /* 设定图片最大宽度 */
+    max-width: 600px;
   }
   figcaption {
-    font-style: 14px; /* 可选样式 */
-    margin-top: 6px; /* 图片与标题间的距离 */
+    font-style: 14px;
+    margin-top: 6px; 
   }
 </style>
 <figure class="image-container">
