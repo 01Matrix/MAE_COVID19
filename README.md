@@ -1,148 +1,172 @@
-## Pre-trained Natural Image Models are Few-shot Learners for Medical Image Classification: COVID-19 Diagnosis as an Example
+# Pre-trained Natural Image Models are Few-shot Learners for Medical Image Classification: COVID-19 Diagnosis as an Example
 
 This repository contains the code for the paper "Pre-trained Natural Image Models are Few-shot Learners for Medical Image Classification: COVID-19 Diagnosis as an Example".
 
-Visualization Demo:
 
-(1) C14_pretrain_model:
-<p align="center">
-  <img src="./demo/C14_pretrain_model.png" width="600">
+## Contents
+
+- [x] Visualization demo
+- [x] Dataset stats
+- [x] Pre-trained models + Intermediate models + fine-tuning code
+- [x] Pre-training code
+
+## Visualization Demo:
+<style>
+  .image-container {
+    text-align: center;
+    margin: 0 auto;
+  }
+  .image-container img {
+    width: 100%;
+    max-width: 600px; /* 设定图片最大宽度 */
+  }
+  figcaption {
+    font-style: 14px; /* 可选样式 */
+    margin-top: 6px; /* 图片与标题间的距离 */
+  }
+</style>
+<figure class="image-container">
+  <img src="./demo/C14_pretrain_model.png" alt="C14_pretrain_model">
+  <figcaption>Visualization of MAE-B/16_DATA14</figcaption>
+</figure>
+
+<figure class="image-container">
+  <img src="./demo/C1000_pretrain_model.png" alt="C1000_pretrain_model">
+  <figcaption>Visualization of MAE-B/16_C1000</figcaption>
+</figure>
+
+<!-- (1) C14_pretrain_model:
+<p align="left">
+  <img src="./demo/C14_pretrain_model.png" width="600" title="C14_pretrain_model">
+  <figcaption>这是图片的标题</figcaption>
 </p>
 
 (2) C1000_pretrain_model:
-<p align="center">
-  <img src="./demo/C1000_pretrain_model.png" width="600">
-</p>
+<p align="left">
+  <img src="./demo/C1000_pretrain_model.png" width="600" title="C1000_pretrain_model">
+</p> -->
 
+## Dataset for pre-training
 
-* This repo is a modification on the DeiT repo. Installation and preparation follow that repo.
-
-* This repo is based on timm==0.3.2, for which a fix is needed to work with PyTorch 1.8.1+.
-
-### Catalog
-
-- [x] Visualization demo
-- [x] Pre-trained checkpoints + fine-tuning code
-- [x] Pre-training code
-
-
-### Fine-tuning with pre-trained checkpoints
-
-The following table provides the pre-trained checkpoints used in the paper, converted from TF/TPU to PT/GPU:
-<table><tbody>
+<table>
+<caption>Specifications of the 14 self-collected public COVID-19 CT image datasets making up of the pre-training composite dataset</caption>
+<tbody>
 <!-- START TABLE -->
 <!-- TABLE HEADER -->
-<th valign="bottom"></th>
-<th valign="bottom">ViT-Base</th>
-<th valign="bottom">ViT-Large</th>
-<th valign="bottom">ViT-Huge</th>
+<th valign="bottom">Name</th>
+<th valign="bottom">Abbreviation</th>
+<th valign="bottom">COVID</th>
+<th valign="bottom">Normal</th>
+<th valign="bottom">Bacteria</th>
+<th valign="bottom">Dataset size</th>
+
+<tr><td align="left">chest-ct-scans-with-COVID-19</td> <td align="left"> CHE </td><td align="left"> 27,781 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  27,781 </td></tr>
+<tr><td align="left">COVID-19_ct_scans1</td> <td align="left"> CCT </td><td align="left">  1,762 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  1,762 </td></tr>
+<tr><td align="left">COVID-19-20_v2</td> <td align="left"> C1920 </td><td align="left">  6,723 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  6,723 </td></tr>
+<tr><td align="left">COVID-19-AR</td> <td align="left"> CAR </td><td align="left">  18,592 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  18,592 </td></tr>
+<tr><td align="left">COVID-19-CT-segmentation-dataset</td> <td align="left"> CCS </td><td align="left">  110 </td><td align="left"> 	0 </td><td align="left"> 	0 </td><td align="left"> 	110 </td></tr>
+<tr><td align="left">COVID19-CT-Dataset1000+</td> <td align="left"> C1000 </td><td align="left">  307,765 </td><td align="left"> 	0 </td><td align="left"> 	0 </td><td align="left"> 	307,765 </td></tr>
+<tr><td align="left">CT_Images_in_COVID-19</td> </td><td align="left"> 	CIC	</td><td align="left">  32,548 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  32,548 </td></tr>
+<tr><td align="left">MIDRC-RICORD-1A</td> <td align="left"> MRA </td><td align="left">  9,833 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left"> 	9,833 </td></tr>
+<tr><td align="left">MIDRC-RICORD-1B</td> <td align="left"> MRB </td><td align="left">  5,501 </td><td align="left"> 	0 </td><td align="left"> 	0 </td><td align="left"> 	5,501 </td></tr>
+<tr><td align="left">sarscov2-ctscan-dataset</td> </td><td align="left">  SC </td><td align="left">  1,252 </td><td align="left">  1,229 </td><td align="left">  0 </td><td align="left">  2,481 </td></tr>
+<tr><td align="left">SIRM-COVID-19</td> <td align="left"> SIRM </td><td align="left"> 	599 </td><td align="left">  0	</td><td align="left">  0	</td><td align="left">  599 </td></tr>
+<tr><td align="left">COVIDX-CT-2A</td> <td align="left"> CXC </td><td align="left">  93,975	</td><td align="left">  59,510 </td><td align="left">  0 </td><td align="left">  153,485 </td></tr>
+<tr><td align="left">large-COVID-19-ct-slice-dataset</td> <td align="left"> LC </td><td align="left">  7,593 </td><td align="left">  6,893 </td><td align="left">  0 </td><td align="left">  14,486 </td></tr>
+<tr><td align="left">COVID-19-and-common-pneumonia-chest-CT-dataset</td> <td align="left"> CC </td><td align="left">  41,813 </td><td align="left">  0 </td><td align="left">  55,219 </td><td align="left">  97,032 </td></tr>
+<tr><td align="left"> Summation </td> <td align="left">  / </td> <td align="left">  555,847 </td> <td align="left">  67,632 </td> <td align="left">  55,219 </td> <td align="left">  678,698 </td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
 <!-- TABLE BODY -->
-<tr><td align="left">pre-trained checkpoint</td>
-<td align="center"><a href="https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_base.pth">download</a></td>
-<td align="center"><a href="https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_large.pth">download</a></td>
-<td align="center"><a href="https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_huge.pth">download</a></td>
-</tr>
-<tr><td align="left">md5</td>
-<td align="center"><tt>8cad7c</tt></td>
-<td align="center"><tt>b8b06e</tt></td>
-<td align="center"><tt>9bdbb0</tt></td>
-</tr>
-</tbody></table>
+</tbody>
+</table>
 
-The fine-tuning instruction is in [FINETUNE.md](FINETUNE.md).
+## Pre-training recipes
 
-By fine-tuning these pre-trained models, we rank #1 in these classification tasks (detailed in the paper):
-<table><tbody>
+The pre-training recipes are in [PRETRAIN.md](PRETRAIN.md).
+
+## Fine-tuning recipes
+### Pre-trained models for fine-tuning
+
+<table>
+<caption>The following table provides the pre-trained image models for fine-tuning. Supervised models are pre-trained with vanilla ViT, and self-supervised models are pre-trained with MAE</caption>
+<tbody>
 <!-- START TABLE -->
 <!-- TABLE HEADER -->
-<th valign="bottom"></th>
-<th valign="bottom">ViT-B</th>
-<th valign="bottom">ViT-L</th>
-<th valign="bottom">ViT-H</th>
-<th valign="bottom">ViT-H<sub>448</sub></th>
-<td valign="bottom" style="color:#C0C0C0">prev best</td>
+<th valign="bottom">Pre-trained model</th>
+<th valign="bottom">Backbone</th>
+<th valign="bottom">Training dataset</th>
+<th valign="bottom">Training method</th>
+<th valign="bottom">Image domain</th>
 <!-- TABLE BODY -->
-<tr><td align="left">ImageNet-1K (no external data)</td>
-<td align="center">83.6</td>
-<td align="center">85.9</td>
-<td align="center">86.9</td>
-<td align="center"><b>87.8</b></td>
-<td align="center" style="color:#C0C0C0">87.1</td>
-</tr>
-<td colspan="5"><font size="1"><em>following are evaluation of the same model weights (fine-tuned in original ImageNet-1K):</em></font></td>
-<tr>
-</tr>
-<tr><td align="left">ImageNet-Corruption (error rate) </td>
-<td align="center">51.7</td>
-<td align="center">41.8</td>
-<td align="center"><b>33.8</b></td>
-<td align="center">36.8</td>
-<td align="center" style="color:#C0C0C0">42.5</td>
-</tr>
-<tr><td align="left">ImageNet-Adversarial</td>
-<td align="center">35.9</td>
-<td align="center">57.1</td>
-<td align="center">68.2</td>
-<td align="center"><b>76.7</b></td>
-<td align="center" style="color:#C0C0C0">35.8</td>
-</tr>
-<tr><td align="left">ImageNet-Rendition</td>
-<td align="center">48.3</td>
-<td align="center">59.9</td>
-<td align="center">64.4</td>
-<td align="center"><b>66.5</b></td>
-<td align="center" style="color:#C0C0C0">48.7</td>
-</tr>
-<tr><td align="left">ImageNet-Sketch</td>
-<td align="center">34.5</td>
-<td align="center">45.3</td>
-<td align="center">49.6</td>
-<td align="center"><b>50.9</b></td>
-<td align="center" style="color:#C0C0C0">36.0</td>
-</tr>
-<td colspan="5"><font size="1"><em>following are transfer learning by fine-tuning the pre-trained MAE on the target dataset:</em></font></td>
-</tr>
-<tr><td align="left">iNaturalists 2017</td>
-<td align="center">70.5</td>
-<td align="center">75.7</td>
-<td align="center">79.3</td>
-<td align="center"><b>83.4</b></td>
-<td align="center" style="color:#C0C0C0">75.4</td>
-</tr>
-<tr><td align="left">iNaturalists 2018</td>
-<td align="center">75.4</td>
-<td align="center">80.1</td>
-<td align="center">83.0</td>
-<td align="center"><b>86.8</b></td>
-<td align="center" style="color:#C0C0C0">81.2</td>
-</tr>
-<tr><td align="left">iNaturalists 2019</td>
-<td align="center">80.5</td>
-<td align="center">83.4</td>
-<td align="center">85.7</td>
-<td align="center"><b>88.3</b></td>
-<td align="center" style="color:#C0C0C0">84.1</td>
-</tr>
-<tr><td align="left">Places205</td>
-<td align="center">63.9</td>
-<td align="center">65.8</td>
-<td align="center">65.9</td>
-<td align="center"><b>66.8</b></td>
-<td align="center" style="color:#C0C0C0">66.0</td>
-</tr>
-<tr><td align="left">Places365</td>
-<td align="center">57.9</td>
-<td align="center">59.4</td>
-<td align="center">59.8</td>
-<td align="center"><b>60.3</b></td>
-<td align="center" style="color:#C0C0C0">58.0</td>
-</tr>
-</tbody></table>
+<tr><td align="left"><a href="">ViT-B/16_IN1K</a></td><td align="left">ViT-B/16</td><td align="left">IN1K</td><td align="left">SL</td><td align="left">Natural image</td></tr>
+<tr><td align="left"><a href="">ViT-L/16_IN1K</a></td><td align="left">ViT-L/16</td><td align="left">IN1K</td><td align="left">SL</td><td align="left">Natural image</td></tr>
+<tr><td align="left"><a href="">ViT-B/16_CXC</a></td><td align="left">ViT-B/16</td><td align="left">CXC</td><td align="left">SL</td><td align="left">Medical image</td></tr>
+<tr><td align="left"><a href="">ViT-L/16_CXC</a></td><td align="left">ViT-L/16</td><td align="left">CXC</td><td align="left">SL</td><td align="left">Medical image</td></tr>
+<tr><td align="left"><a href="">MAE-B/16_IN1K</a></td><td align="left">ViT-B/16</td><td align="left">IN1K</td><td align="left">SSL</td><td align="left">Natural image</td></tr>
+<tr><td align="left"><a href="">MAE-L/16_IN1K</a></td><td align="left">ViT-L/16</td><td align="left">IN1K</td><td align="left">SSL</td><td align="left">Natural image</td></tr>
+<tr><td align="left"><a href="">MAE-B/16_IN1K</a></td><td align="left">ViT-B/16</td><td align="left">CXC</td><td align="left">SSL</td><td align="left">Medical image</td></tr>
+<tr><td align="left"><a href="">MAE-L/16_IN1K</a></td><td align="left">ViT-L/16</td><td align="left">CXC</td><td align="left">SSL</td><td align="left">Medical image</td></tr>
+<tr><td align="left"><a href="">MAE-B/16_DATA13</a></td><td align="left">ViT-B/16</td><td align="left">DATA13</td><td align="left">SSL</td><td align="left">Medical image</td></tr>
+<tr><td align="left"><a href="">MAE-L/16_DATA13</a></td><td align="left">ViT-L/16</td><td align="left">DATA13</td><td align="left">SSL</td><td align="left">Medical image</td></tr>
+<tr><td align="left"><a href="">MAE-B/16_DATA14</a></td><td align="left">ViT-B/16</td><td align="left">DATA14</td><td align="left">SSL</td><td align="left">Medical image</td></tr>
+<tr><td align="left"><a href="">MAE-L/16_DATA14</a></td><td align="left">ViT-L/16</td><td align="left">DATA14</td><td align="left">SSL</td><td align="left">Medical image</td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody>
+</table>
 
-### Pre-training
+### Intermediate models for fine-tuning
 
-The pre-training instruction is in [PRETRAIN.md](PRETRAIN.md).
+<table>
+<caption>The following table provides the intermediate models for fine-tuning. Supervised models are pre-trained with vanilla ViT, and self-supervised models are pre-trained with MAE</caption>
+<tbody>
+<!-- START TABLE -->
+<!-- TABLE HEADER -->
+<th valign="bottom">Intermediate model</th>
+<th valign="bottom">Backbone</th>
+<th valign="bottom">Base model</th>
+<th valign="bottom">Dataset for Phase-1</th>
+<!-- TABLE BODY -->
+<tr><td align="left"><a href="">ViT-B/16_IN1K/CXC</a></td><td align="left">ViT-B/16</td><td align="left">ViT-B/16_IN1K</td><td align="center">CXC</td></tr>
+<tr><td align="left"><a href="">ViT-L/16_IN1K/CXC</a></td><td align="left">ViT-L/16</td><td align="left">ViT-L/16_IN1K</td><td align="center">CXC</td></tr>
+<tr><td align="left"><a href="">MAE-B/16_IN1K/CXC</a></td><td align="left">ViT-B/16</td><td align="left">MAE-B/16_IN1K</td><td align="center">CXC</td></tr>
+<tr><td align="left"><a href="">MAE-L/16_IN1K/CXC</a></td><td align="left">ViT-L/16</td><td align="left">MAE-L/16_IN1K</td><td align="center">CXC</td></tr>
+<tr><td align="left"><a href="">MAE-B/16_DATA13/CXC</a></td><td align="left">ViT-B/16</td><td align="left">MAE-B/16_DATA13</td><td align="center">CXC</td></tr>
+<tr><td align="left"><a href="">MAE-B/16_DATA13/CXC</a></td><td align="left">ViT-L/16</td><td align="left">MAE-L/16_DATA13</td><td align="center">CXC</td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody>
+</table>
 
-### License
+The fine-tuning recipes are in [FINETUNE.md](FINETUNE.md).
 
-This project is under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for details.
+### Results
+
+By fine-tuning the intermediate models, we achieve the best performance in few-shot real-world COVID-19 classification tasks from CT images (detailed in the paper):
+
+<table>
+<caption>The following table provides the results of full fine-tuning of intermediate models using U_orig across 12 different random seeds, with data split = 2:3:5. Intermediate models consistently demonstrate a remarkable performance gain compared to the corresponding pre-trained base models. Moreover, intermediate MAE models outperform intermediate ViT models significantly. Notably, MAE-L/16_IN1K/CXC performs the best among all the intermediate models</caption>
+<tbody>
+<!-- START TABLE -->
+<!-- TABLE HEADER -->
+<th valign="bottom">Intermediate model</th>
+<th valign="bottom">Dataset</th>
+<th valign="bottom">Accuracy</th>
+<th valign="bottom">F1</th>
+<th valign="bottom">AUC</th>
+<!-- TABLE BODY -->
+<tr><td align="left"><a href="">ViT-B/16_IN1K/CXC</a></td><td align="left">U_orig</td><td align="left">0.7712 ± 0.0188</td><td align="left">0.7464 ± 0.0206</td><td>0.8456 ± 0.0114</td></tr>
+<tr><td align="left"><a href="">ViT-L/16_IN1K/CXC</a></td><td align="left">U_orig</td><td align="left">0.7718 ± 0.0172</td><td align="left">0.7453 ± 0.0313</td><td>0.8494 ± 0.0159</td></tr>
+<tr><td align="left"><a href="">MAE-B/16_IN1K/CXC</a></td><td align="left">U_orig</td><td align="left">0.8554 ± 0.0222</td><td align="left">0.8445 ± 0.0281</td><td>0.9337 ± 0.0113</td></tr>
+<tr><td align="left"><a href="">MAE-L/16_IN1K/CXC</a></td><td align="left">U_orig</td><td align="left">0.8680 ± 0.0157</td><td align="left">0.8586 ± 0.0164</td><td>0.9380 ± 0.0125</td></tr>
+<tr><td align="left"><a href="">MAE-B/16_DATA13/CXC</a></td><td align="left">U_orig</td><td align="left">0.8434$ ± 0.0231</td><td align="left">0.8319 ± 0.0287</td><td>0.9258 ± 0.0117</td></tr>
+<tr><td align="left"><a href="">MAE-B/16_DATA13/CXC</a></td><td align="left">U_orig</td><td align="left">0.8385$ ± 0.0255</td><td align="left">0.8355 ± 0.0242</td><td>0.9217 ± 0.0111</td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody>
+</table>
+
+## License
+
+* This project is under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for details.
+
+## Acknowledgement
+* This repo is adapted from the [MAE](https://github.com/facebookresearch/mae) repo. Installation and preparation follow that repo.
+* This repo is based on [timm](https://github.com/huggingface/pytorch-image-models) package, which is a PyTorch Image Models library.
