@@ -168,5 +168,5 @@ By fine-tuning the intermediate models, we achieve the best performance in few-s
 * This project is under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for details.
 
 ## Acknowledgement
-* This repo is adapted from the [MAE](https://github.com/facebookresearch/mae) repo. Installation and preparation follow that repo.
+* This repo is adapted from the [MAE](https://github.com/facebookresearch/mae) repo.
 * This repo is based on [timm](https://github.com/huggingface/pytorch-image-models) package, which is a PyTorch Image Models library.
