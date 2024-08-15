@@ -31,19 +31,19 @@ This repository contains the code and datasets for the paper "Pre-trained Natura
 </style> -->
 <figure style="text-align: center; margin: 0 auto;">
   <img src="./demo/C14_pretrain_model.png" alt="C14_pretrain_model" />
-  <figcaption>Visual Reconsruction of MAE-B/16_DATA14</figcaption>
+  <figcaption style="text-align: center; font-size: 14px; margin-top: 6px;">Visual Reconsruction of MAE-B/16_DATA14</figcaption>
 </figure>
 
 <figure style="text-align: center; margin: 0 auto;">
   <img src="./demo/C1000_pretrain_model.png" alt="C1000_pretrain_model" />
-  <figcaption style="font-size: 14px; margin-top: 6px;">Visual Reconsruction of MAE-B/16_C1000</figcaption>
+  <figcaption style="text-align: center; font-size: 14px; margin-top: 6px;">Visual Reconsruction of MAE-B/16_C1000</figcaption>
 </figure>
 
 
 ## Transitional training scheme
 <div align="center">
 <img src=./Transitional_training_scheme.png />
-  <figcaption>As shown in the figure, Transitional Training Scheme comprises two phases. In phase-1 (depicted within
+  <figcaption style="text-align: center; font-size: 14px; margin-top: 6px;">As shown in the figure, Transitional Training Scheme comprises two phases. In phase-1 (depicted within
   fine-tune a pre-trained natural image model and produce an intermediate model. In phase- 2 (depicted within the yellow frame), this intermediate model is further fine-tuned on the target few-shot dataset U orig and yield the final few-shot COVID-19 diagnosis model.</figcaption>
 </div>
 
