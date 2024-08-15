@@ -5,14 +5,14 @@ This repository contains the code and datasets for the paper "Pre-trained Natura
 
 ## Contents
 
-- [x] Demo of Visual Reconsruction by MAE in Medical Images
-- [x] Pre-training Datasets
-- [x] Fine-tuning Datasets
-- [x] Transitional training scheme
-- [x] Pre-trained models for fine-tuning
-- [x] Intermediate models for fine-tuning
-- [x] Pre-training recipes
-- [x] Fine-tuning recipes
+- [x] [Demo of Visual Reconsruction by MAE in Medical Images](#demo-of-visual-reconsruction-by-mae-in-medical-images)
+- [x] [Pre-training Datasets](#pre-training-datasets)
+- [x] [Fine-tuning Datasets](#fine-tuning-datasets)
+- [x] [Transitional training scheme](#transitional-training-scheme)
+- [x] [Pre-trained models for fine-tuning](#pre-trained-models-for-fine-tuning)
+- [x] [Intermediate models for fine-tuning](#intermediate-models-for-fine-tuning)
+- [x] [Pre-training recipes](#pre-training-recipes)
+- [x] [Fine-tuning recipes](#fine-tuning-recipes)
 
 ## Demo of Visual Reconsruction by MAE in Medical Images
 <figure style="text-align: center; margin: 0 auto;">
