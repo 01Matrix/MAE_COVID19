@@ -330,8 +330,8 @@ Results of full fine-tuning of different MAE models on U_orig and U_sani across 
     </tr>
   </tfoot>
 </table>
-## License
 
+## License
 * This project is under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for details.
 
 ## Acknowledgement
