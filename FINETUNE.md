@@ -69,6 +69,6 @@ bash scripts/finetune.sh 8 base U_orig 8:1:1 8
 
 #### Notes
 
-- The [pre-trained models we provide]() are trained with *normalized* pixels `--norm_pix_loss` (1600 epochs, Table 3 in paper). The fine-tuning hyper-parameters are slightly different from the default baseline using *unnormalized* pixels.
+- The [pre-trained models](README.md#pre-training-recipes) are trained with *normalized* pixels `--norm_pix_loss` (1600 epochs, Table 3 in paper). The fine-tuning hyper-parameters are slightly different from the default baseline using *unnormalized* pixels.
 
 - Here we use RandErase following DeiT: `--reprob 0.25`. Its effect is smaller than random variance.
