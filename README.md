@@ -5,12 +5,16 @@ This repository contains the code and datasets for the paper "Pre-trained Natura
 
 ## Contents
 
-- [x] Visualization demo
-- [x] Dataset stats
-- [x] Pre-trained models + Intermediate models + fine-tuning code
-- [x] Pre-training code
+- [x] Demo of Visual Reconsruction by MAE in Medical Images
+- [x] Pre-training Datasets
+- [x] Fine-tuning Datasets
+- [x] Transitional training scheme
+- [x] Pre-trained models for fine-tuning
+- [x] Intermediate models for fine-tuning
+- [x] Pre-training recipes
+- [x] Fine-tuning recipes
 
-## Visualization Demo:
+## Demo of Visual Reconsruction by MAE in Medical Images
 <style>
   .image-container {
     text-align: center;
@@ -26,27 +30,24 @@ This repository contains the code and datasets for the paper "Pre-trained Natura
   }
 </style>
 <figure class="image-container">
-  <img src="./demo/C14_pretrain_model.png" alt="C14_pretrain_model">
-  <figcaption>Visualization of MAE-B/16_DATA14</figcaption>
+  <img src="./demo/C14_pretrain_model.png" alt="C14_pretrain_model" />
+  <figcaption>Visual Reconsruction of MAE-B/16_DATA14</figcaption>
 </figure>
 
 <figure class="image-container">
-  <img src="./demo/C1000_pretrain_model.png" alt="C1000_pretrain_model">
-  <figcaption>Visualization of MAE-B/16_C1000</figcaption>
+  <img src="./demo/C1000_pretrain_model.png" alt="C1000_pretrain_model" />
+  <figcaption>Visual Reconsruction of MAE-B/16_C1000</figcaption>
 </figure>
 
-<!-- (1) C14_pretrain_model:
-<p align="left">
-  <img src="./demo/C14_pretrain_model.png" width="600" title="C14_pretrain_model">
-  <figcaption>这是图片的标题</figcaption>
-</p>
 
-(2) C1000_pretrain_model:
-<p align="left">
-  <img src="./demo/C1000_pretrain_model.png" width="600" title="C1000_pretrain_model">
-</p> -->
+## Transitional training scheme
+<div align="center">
+<img src=./Transitional_training_scheme.png />
+  <figcaption>As shown in the figure, Transitional Training Scheme comprises two phases. In phase-1 (depicted within
+  fine-tune a pre-trained natural image model and produce an intermediate model. In phase- 2 (depicted within the yellow frame), this intermediate model is further fine-tuned on the target few-shot dataset U orig and yield the final few-shot COVID-19 diagnosis model.</figcaption>
+</div>
 
-## Dataset for pre-training
+## Pre-training Datasets
 
 <table>
 <caption>Specifications of the 14 self-collected public COVID-19 CT image datasets making up of the pre-training composite dataset</caption>
@@ -60,32 +61,64 @@ This repository contains the code and datasets for the paper "Pre-trained Natura
 <th valign="bottom">Bacteria</th>
 <th valign="bottom">Dataset size</th>
 
-<tr><td align="left">chest-ct-scans-with-COVID-19</td> <td align="left"> CHE </td><td align="left"> 27,781 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  27,781 </td></tr>
-<tr><td align="left">COVID-19_ct_scans1</td> <td align="left"> CCT </td><td align="left">  1,762 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  1,762 </td></tr>
-<tr><td align="left">COVID-19-20_v2</td> <td align="left"> C1920 </td><td align="left">  6,723 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  6,723 </td></tr>
-<tr><td align="left">COVID-19-AR</td> <td align="left"> CAR </td><td align="left">  18,592 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  18,592 </td></tr>
-<tr><td align="left">COVID-19-CT-segmentation-dataset</td> <td align="left"> CCS </td><td align="left">  110 </td><td align="left"> 	0 </td><td align="left"> 	0 </td><td align="left"> 	110 </td></tr>
-<tr><td align="left">COVID19-CT-Dataset1000+</td> <td align="left"> C1000 </td><td align="left">  307,765 </td><td align="left"> 	0 </td><td align="left"> 	0 </td><td align="left"> 	307,765 </td></tr>
-<tr><td align="left">CT_Images_in_COVID-19</td> </td><td align="left"> 	CIC	</td><td align="left">  32,548 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  32,548 </td></tr>
-<tr><td align="left">MIDRC-RICORD-1A</td> <td align="left"> MRA </td><td align="left">  9,833 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left"> 	9,833 </td></tr>
-<tr><td align="left">MIDRC-RICORD-1B</td> <td align="left"> MRB </td><td align="left">  5,501 </td><td align="left"> 	0 </td><td align="left"> 	0 </td><td align="left"> 	5,501 </td></tr>
-<tr><td align="left">sarscov2-ctscan-dataset</td> </td><td align="left">  SC </td><td align="left">  1,252 </td><td align="left">  1,229 </td><td align="left">  0 </td><td align="left">  2,481 </td></tr>
-<tr><td align="left">SIRM-COVID-19</td> <td align="left"> SIRM </td><td align="left"> 	599 </td><td align="left">  0	</td><td align="left">  0	</td><td align="left">  599 </td></tr>
-<tr><td align="left">COVIDX-CT-2A</td> <td align="left"> CXC </td><td align="left">  93,975	</td><td align="left">  59,510 </td><td align="left">  0 </td><td align="left">  153,485 </td></tr>
-<tr><td align="left">large-COVID-19-ct-slice-dataset</td> <td align="left"> LC </td><td align="left">  7,593 </td><td align="left">  6,893 </td><td align="left">  0 </td><td align="left">  14,486 </td></tr>
-<tr><td align="left">COVID-19-and-common-pneumonia-chest-CT-dataset</td> <td align="left"> CC </td><td align="left">  41,813 </td><td align="left">  0 </td><td align="left">  55,219 </td><td align="left">  97,032 </td></tr>
+<tr><td align="left"><a href="https://www.kaggle.com/soham1024/chest-ct-scans-with-covid19">chest-ct-scans-with-COVID-19</a></td> <td align="left"> CHE </td><td align="left"> 27,781 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  27,781 </td></tr>
+<tr><td align="left"><a href="https://github.com/GeneralBlockchain/covid-19-chest-xray-segmentations-dataset">COVID-19_ct_scans1</a></td> <td align="left"> CCT </td><td align="left">  1,762 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  1,762 </td></tr>
+<tr><td align="left"><a href="https://covid-segmentation.grand-challenge.org/">COVID-19-20_v2</a></td> <td align="left"> C1920 </td><td align="left">  6,723 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  6,723 </td></tr>
+<tr><td align="left"><a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70226443">COVID-19-AR</a></td> <td align="left"> CAR </td><td align="left">  18,592 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  18,592 </td></tr>
+<tr><td align="left"><a href="https://figshare.com/authors/MedSeg/9940190">COVID-19-CT-segmentation-dataset</a></td> <td align="left"> CCS </td><td align="left">  110 </td><td align="left"> 	0 </td><td align="left"> 	0 </td><td align="left"> 	110 </td></tr>
+<tr><td align="left"><a href="https://pubmed.ncbi.nlm.nih.gov/33980279/">COVID19-CT-Dataset1000+</a></td> <td align="left"> C1000 </td><td align="left">  307,765 </td><td align="left"> 	0 </td><td align="left"> 	0 </td><td align="left"> 	307,765 </td></tr>
+<tr><td align="left"><a href="https://www.cancerimagingarchive.net/collection/ct-images-in-covid-19">CT_Images_in_COVID-19</a></td> </td><td align="left"> 	CIC	</td><td align="left">  32,548 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  32,548 </td></tr>
+<tr><td align="left"><a href="https://www.cancerimagingarchive.net/collection/midrc-ricord-1a/">MIDRC-RICORD-1A</a></td> <td align="left"> MRA </td><td align="left">  9,833 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left"> 	9,833 </td></tr>
+<tr><td align="left"><a href="https://www.cancerimagingarchive.net/collection/midrc-ricord-1b/">MIDRC-RICORD-1B</a></td> <td align="left"> MRB </td><td align="left">  5,501 </td><td align="left"> 	0 </td><td align="left"> 	0 </td><td align="left"> 	5,501 </td></tr>
+<tr><td align="left"><a href="https://www.kaggle.com/plameneduardo/sarscov2-ctscan-dataset">sarscov2-ctscan-dataset</a></td> </td><td align="left">  SC </td><td align="left">  1,252 </td><td align="left">  1,229 </td><td align="left">  0 </td><td align="left">  2,481 </td></tr>
+<tr><td align="left"><a href="https://sirm.org/category/covid-19/">SIRM-COVID-19 (data removed by the host now)</a></td> <td align="left"> SIRM </td><td align="left"> 	599 </td><td align="left">  0	</td><td align="left">  0	</td><td align="left">  599 </td></tr>
+<tr><td align="left"><a href="https://alexswong.github.io/COVID-Net/">COVIDX-CT-2A</a></td> <td align="left"> CXC </td><td align="left">  93,975	</td><td align="left">  59,510 </td><td align="left">  0 </td><td align="left">  153,485 </td></tr>
+<tr><td align="left"><a href="https://www.kaggle.com/maedemaftouni/large-covid19-ct-slice-dataset">large-COVID-19-ct-slice-dataset</a></td> <td align="left"> LC </td><td align="left">  7,593 </td><td align="left">  6,893 </td><td align="left">  0 </td><td align="left">  14,486 </td></tr>
+<tr><td align="left"><a href="https://data.mendeley.com/datasets/3y55vgckg6/2">COVID-19-and-common-pneumonia-chest-CT-dataset</a></td> <td align="left"> CC </td><td align="left">  41,813 </td><td align="left">  0 </td><td align="left">  55,219 </td><td align="left">  97,032 </td></tr>
 <tr><td align="left"> Summation </td> <td align="left">  / </td> <td align="left">  555,847 </td> <td align="left">  67,632 </td> <td align="left">  55,219 </td> <td align="left">  678,698 </td></tr>
 <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
 <!-- TABLE BODY -->
 </tbody>
 </table>
 
-## Pre-training recipes
+## Fine-tuning Datasets
+The downstream fine-tuning dataset is sourced from the work of [COVID-CT-Dataset: A CT Scan Dataset about COVID-19](https://doi.org/10.48550/arXiv.2003.13865), which has established a real-world COVID-19 CT image dataset, UCSD-AI4H-COVID-CT (named **U_orig** for abbreviation in our work, and ‘orig’ means ‘original’).This is relatively popular in the deep learning-based medical image analysis community, especially the area related to COVID-19 diagnosis.
 
-The pre-training recipes are in [PRETRAIN.md](PRETRAIN.md).
+One thing noteworthy is that U_orig does not account for the patient level of CT scans, implying that each patient has multiple adjacent CT images (slices) in one CT scan. For a more stringent performance evaluation in our experiments, we select only one slice from each patient, creating a smaller dataset named U_sani (‘sani’ means ‘sanitized’). U_sani consists of 131 positive samples and 158 negative samples.
 
-## Fine-tuning recipes
-### Pre-trained models for fine-tuning
+<table>
+<caption>Specifications of fine-tuning datasets</caption>
+<tbody>
+  <tr>
+    <th style="text-align: center;" rowspan="2">Name</th>
+    <th style="text-align: center;" colspan="2">COVID</th>
+    <th style="text-align: center;" colspan="2">Non-COVID</th>
+  </tr>
+  <tr>
+    <th halign="center">samples</th>
+    <th halign="center">patients</th>
+    <th halign="center">samples</th>
+    <th halign="center">patients</th>
+  </tr>
+  <tr>
+    <td align="center">U__orig</td>
+    <td align="center">349</td>
+    <td align="center">216</td>
+    <td align="center">397</td>
+    <td align="center">171</td>
+  </tr>
+  <tr>
+    <td align="center">U__sani</td>
+    <td align="center">131</td>
+    <td align="center">131</td>
+    <td align="center">158</td>
+    <td align="center">158</td>
+  </tr>
+</tbody>
+</table>
+
+
+## Pre-trained models for fine-tuning
 
 <table>
 <caption>The following table provides the pre-trained image models for fine-tuning. Supervised models are pre-trained with vanilla ViT, and self-supervised models are pre-trained with MAE</caption>
@@ -114,7 +147,7 @@ The pre-training recipes are in [PRETRAIN.md](PRETRAIN.md).
 </tbody>
 </table>
 
-### Intermediate models for fine-tuning
+## Intermediate models for fine-tuning
 
 <table>
 <caption>The following table provides the intermediate models for fine-tuning. Supervised models are pre-trained with vanilla ViT, and self-supervised models are pre-trained with MAE</caption>
@@ -136,9 +169,15 @@ The pre-training recipes are in [PRETRAIN.md](PRETRAIN.md).
 </tbody>
 </table>
 
+## Pre-training recipes
+The pre-training recipes are in [PRETRAIN.md](PRETRAIN.md).
+
+## Fine-tuning recipes
 The fine-tuning recipes are in [FINETUNE.md](FINETUNE.md).
 
-### Results
+## Transitional training scheme
+
+## Results
 
 By fine-tuning the intermediate models, we achieve the best performance in few-shot real-world COVID-19 classification tasks from CT images (detailed in the paper):
 
@@ -169,4 +208,4 @@ By fine-tuning the intermediate models, we achieve the best performance in few-s
 
 ## Acknowledgement
 * This repo is adapted from the [MAE](https://github.com/facebookresearch/mae) repo.
-* This repo is based on [timm](https://github.com/huggingface/pytorch-image-models) package, which is a PyTorch Image Models library.
+* This repo is based on a PyTorch Image Models library [timm](https://github.com/huggingface/pytorch-image-models).
