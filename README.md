@@ -15,7 +15,7 @@ This repository contains the code and datasets for the paper "Pre-trained Natura
 - [x] Fine-tuning recipes
 
 ## Demo of Visual Reconsruction by MAE in Medical Images
-<style>
+<!-- <style>
   .image-container {
     text-align: center;
     margin: 0 auto;
@@ -28,15 +28,15 @@ This repository contains the code and datasets for the paper "Pre-trained Natura
     font-style: 14px;
     margin-top: 6px; 
   }
-</style>
-<figure class="image-container">
+</style> -->
+<figure style="text-align: center; margin: 0 auto;">
   <img src="./demo/C14_pretrain_model.png" alt="C14_pretrain_model" />
   <figcaption>Visual Reconsruction of MAE-B/16_DATA14</figcaption>
 </figure>
 
-<figure class="image-container">
+<figure style="text-align: center; margin: 0 auto;">
   <img src="./demo/C1000_pretrain_model.png" alt="C1000_pretrain_model" />
-  <figcaption>Visual Reconsruction of MAE-B/16_C1000</figcaption>
+  <figcaption style="font-size: 14px; margin-top: 6px;">Visual Reconsruction of MAE-B/16_C1000</figcaption>
 </figure>
 
 
