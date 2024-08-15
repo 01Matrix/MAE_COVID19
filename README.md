@@ -39,12 +39,12 @@ As shown in the figure, Transitional Training Scheme comprises two phases. In ph
 <tbody>
 <!-- START TABLE -->
 <!-- TABLE HEADER -->
-<th valign="bottom">Name</th>
-<th valign="bottom">Abbreviation</th>
-<th valign="bottom">COVID</th>
-<th valign="bottom">Normal</th>
-<th valign="bottom">Bacteria</th>
-<th valign="bottom">Dataset size</th>
+<th valign="center">Name</th>
+<th valign="center">Abbreviation</th>
+<th valign="center">COVID</th>
+<th valign="center">Normal</th>
+<th valign="center">Bacteria</th>
+<th valign="center">Dataset size</th>
 
 <tr><td align="left"><a href="https://www.kaggle.com/soham1024/chest-ct-scans-with-covid19">chest-ct-scans-with-COVID-19</a></td> <td align="left"> CHE </td><td align="left"> 27,781 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  27,781 </td></tr>
 <tr><td align="left"><a href="https://github.com/GeneralBlockchain/covid-19-chest-xray-segmentations-dataset">COVID-19_ct_scans1</a></td> <td align="left"> CCT </td><td align="left">  1,762 </td><td align="left">  0 </td><td align="left">  0 </td><td align="left">  1,762 </td></tr>
@@ -110,11 +110,11 @@ One thing noteworthy is that U_orig does not account for the patient level of CT
 <tbody>
 <!-- START TABLE -->
 <!-- TABLE HEADER -->
-<th valign="bottom">Pre-trained model</th>
-<th valign="bottom">Backbone</th>
-<th valign="bottom">Training dataset</th>
-<th valign="bottom">Training method</th>
-<th valign="bottom">Image domain</th>
+<th valign="center">Pre-trained model</th>
+<th valign="center">Backbone</th>
+<th valign="center">Training dataset</th>
+<th valign="center">Training method</th>
+<th valign="center">Image domain</th>
 <!-- TABLE BODY -->
 <tr><td align="left"><a href="">ViT-B/16_IN1K</a></td><td align="left">ViT-B/16</td><td align="left">IN1K</td><td align="left">SL</td><td align="left">Natural image</td></tr>
 <tr><td align="left"><a href="">ViT-L/16_IN1K</a></td><td align="left">ViT-L/16</td><td align="left">IN1K</td><td align="left">SL</td><td align="left">Natural image</td></tr>
@@ -139,10 +139,10 @@ One thing noteworthy is that U_orig does not account for the patient level of CT
 <tbody>
 <!-- START TABLE -->
 <!-- TABLE HEADER -->
-<th valign="bottom">Intermediate model</th>
-<th valign="bottom">Backbone</th>
-<th valign="bottom">Base model</th>
-<th valign="bottom">Dataset for Phase-1</th>
+<th valign="center">Intermediate model</th>
+<th valign="center">Backbone</th>
+<th valign="center">Base model</th>
+<th valign="center">Dataset for Phase-1</th>
 <!-- TABLE BODY -->
 <tr><td align="left"><a href="">ViT-B/16_IN1K/CXC</a></td><td align="left">ViT-B/16</td><td align="left">ViT-B/16_IN1K</td><td align="center">CXC</td></tr>
 <tr><td align="left"><a href="">ViT-L/16_IN1K/CXC</a></td><td align="left">ViT-L/16</td><td align="left">ViT-L/16_IN1K</td><td align="center">CXC</td></tr>
@@ -204,11 +204,11 @@ The following table provides the results of full fine-tuning of intermediate mod
 <tbody>
 <!-- START TABLE -->
 <!-- TABLE HEADER -->
-<th valign="bottom">Intermediate model</th>
-<th valign="bottom">Dataset</th>
-<th valign="bottom">Accuracy</th>
-<th valign="bottom">F1</th>
-<th valign="bottom">AUC</th>
+<th valign="center">Intermediate model</th>
+<th valign="center">Dataset</th>
+<th valign="center">Accuracy</th>
+<th valign="center">F1</th>
+<th valign="center">AUC</th>
 <!-- TABLE BODY -->
 <tr><td align="left">ViT-B/16_IN1K/CXC</td><td align="left">U_orig</td><td align="left">0.7712 ± 0.0188</td><td align="left">0.7464 ± 0.0206</td><td>0.8456 ± 0.0114</td></tr>
 <tr><td align="left">ViT-L/16_IN1K/CXC</td><td align="left">U_orig</td><td align="left">0.7718 ± 0.0172</td><td align="left">0.7453 ± 0.0313</td><td>0.8494 ± 0.0159</td></tr>
