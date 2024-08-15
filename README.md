@@ -27,10 +27,9 @@ This repository contains the code and datasets for the paper "Pre-trained Natura
 
 
 ## Transitional training scheme
+As shown in the figure, Transitional Training Scheme comprises two phases. In phase-1 (depicted within fine-tune a pre-trained natural image model and produce an intermediate model. In phase- 2 (depicted within the yellow frame), this intermediate model is further fine-tuned on the target few-shot dataset U orig and yield the final few-shot COVID-19 diagnosis model.
 <div align="center">
 <img src=./Transitional_training_scheme.png />
-  <figcaption style="text-align: center; font-size: 14px; margin-top: 6px;">As shown in the figure, Transitional Training Scheme comprises two phases. In phase-1 (depicted within
-  fine-tune a pre-trained natural image model and produce an intermediate model. In phase- 2 (depicted within the yellow frame), this intermediate model is further fine-tuned on the target few-shot dataset U orig and yield the final few-shot COVID-19 diagnosis model.</figcaption>
 </div>
 
 ## Pre-training Datasets
@@ -211,12 +210,12 @@ The following table provides the results of full fine-tuning of intermediate mod
 <th valign="bottom">F1</th>
 <th valign="bottom">AUC</th>
 <!-- TABLE BODY -->
-<tr><td align="left"><a href="">ViT-B/16_IN1K/CXC</a></td><td align="left">U_orig</td><td align="left">0.7712 ± 0.0188</td><td align="left">0.7464 ± 0.0206</td><td>0.8456 ± 0.0114</td></tr>
-<tr><td align="left"><a href="">ViT-L/16_IN1K/CXC</a></td><td align="left">U_orig</td><td align="left">0.7718 ± 0.0172</td><td align="left">0.7453 ± 0.0313</td><td>0.8494 ± 0.0159</td></tr>
-<tr><td align="left"><a href="">MAE-B/16_IN1K/CXC</a></td><td align="left">U_orig</td><td align="left">0.8554 ± 0.0222</td><td align="left">0.8445 ± 0.0281</td><td>0.9337 ± 0.0113</td></tr>
-<tr><td align="left"><a href="">MAE-L/16_IN1K/CXC</a></td><td align="left">U_orig</td><td align="left">0.8680 ± 0.0157</td><td align="left">0.8586 ± 0.0164</td><td>0.9380 ± 0.0125</td></tr>
-<tr><td align="left"><a href="">MAE-B/16_DATA13/CXC</a></td><td align="left">U_orig</td><td align="left">0.8434$ ± 0.0231</td><td align="left">0.8319 ± 0.0287</td><td>0.9258 ± 0.0117</td></tr>
-<tr><td align="left"><a href="">MAE-B/16_DATA13/CXC</a></td><td align="left">U_orig</td><td align="left">0.8385$ ± 0.0255</td><td align="left">0.8355 ± 0.0242</td><td>0.9217 ± 0.0111</td></tr>
+<tr><td align="left">ViT-B/16_IN1K/CXC</td><td align="left">U_orig</td><td align="left">0.7712 ± 0.0188</td><td align="left">0.7464 ± 0.0206</td><td>0.8456 ± 0.0114</td></tr>
+<tr><td align="left">ViT-L/16_IN1K/CXC</td><td align="left">U_orig</td><td align="left">0.7718 ± 0.0172</td><td align="left">0.7453 ± 0.0313</td><td>0.8494 ± 0.0159</td></tr>
+<tr><td align="left">MAE-B/16_IN1K/CXC</td><td align="left">U_orig</td><td align="left">0.8554 ± 0.0222</td><td align="left">0.8445 ± 0.0281</td><td>0.9337 ± 0.0113</td></tr>
+<tr><td align="left">MAE-L/16_IN1K/CXC</td><td align="left">U_orig</td><td align="left">0.8680 ± 0.0157</td><td align="left">0.8586 ± 0.0164</td><td>0.9380 ± 0.0125</td></tr>
+<tr><td align="left">MAE-B/16_DATA13/CXC</td><td align="left">U_orig</td><td align="left">0.8434$ ± 0.0231</td><td align="left">0.8319 ± 0.0287</td><td>0.9258 ± 0.0117</td></tr>
+<tr><td align="left">MAE-B/16_DATA13/CXC</td><td align="left">U_orig</td><td align="left">0.8385$ ± 0.0255</td><td align="left">0.8355 ± 0.0242</td><td>0.9217 ± 0.0111</td></tr>
 <tr><td></td><td></td><td></td><td></td><td></td></tr>
 </tbody>
 </table>
