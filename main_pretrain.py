@@ -83,9 +83,9 @@ def get_args_parser():
     parser.add_argument('--data_path', default='./data_dir/public_medical_images', type=str,help='dataset path')
     parser.add_argument('--dataset', type=str, nargs='+', help='pretrain dataset list')
 
-    parser.add_argument('--output_dir', default='/home/hwxiao/mycodes/MAE_COVID19/outputs',
+    parser.add_argument('--output_dir', default='./MAE_COVID19_output_pretrain',
                         help='path where to save, empty for no saving')
-    parser.add_argument('--log_dir', default='/home/hwxiao/mycodes/MAE_COVID19/outputs',
+    parser.add_argument('--log_dir', default='./MAE_COVID19_output_pretrain',
                         help='path where to tensorboard log')
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')

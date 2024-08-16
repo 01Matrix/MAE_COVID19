@@ -14,5 +14,5 @@ OMP_NUM_THREADS=1 torchrun --nnodes=1 --nproc_per_node=4 main_pretrain.py \
                                     CXSD CRDX CDX QUEX CCXD MRC CHEXD \
                                     CHAOSCT DL KITS LIDC LITS MMWHS VERSE LYMPH \
                                     CXNIH CXPERT DR MNS MURA CXIU OCX \
-                        --resume /home/hwxiao/mycodes/MAE_COVID19/outputs/output_pretrain/large_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_L_orig_CC_orig_CXSD_CRDX_CDX_QUEX_CCXD_MRC_CHEXD_CHAOSCT_DL_KITS_LIDC_LITS_MMWHS_VERSE_LYMPH_CXNIH_CXPERT_DR_MNS_MURA_CXIU_OCX_pretrain/checkpoint-420.pth
+                        --resume ./MAE_COVID19_output_pretrain/large_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_L_orig_CC_orig_CXSD_CRDX_CDX_QUEX_CCXD_MRC_CHEXD_CHAOSCT_DL_KITS_LIDC_LITS_MMWHS_VERSE_LYMPH_CXNIH_CXPERT_DR_MNS_MURA_CXIU_OCX_pretrain/checkpoint-420.pth
 

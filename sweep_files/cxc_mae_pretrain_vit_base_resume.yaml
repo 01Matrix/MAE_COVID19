@@ -45,7 +45,7 @@ parameters:
     value: 42
   finetune:
     values:
-    - /home/hwxiao/mycodes/MAE_COVID19/outputs/output_pretrain/base_CXC_pretrain/checkpoint-50.pth
+    - ./MAE_COVID19_output_pretrain/base_CXC_pretrain/checkpoint-50.pth
   split_ratio:
     values:
     - '2.0:3.0:5'
