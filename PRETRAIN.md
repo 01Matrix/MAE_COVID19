@@ -1,6 +1,6 @@
 ## Pre-training MAE_COVID19
 
-To pre-train ViT-Base with **one-node training**, run the following on 1 node with 8 GPUs:
+To pre-train ViT-Base with **single-node training**, run the following on 1 node with 8 GPUs:
 ```
 #!/bin/bash
 
