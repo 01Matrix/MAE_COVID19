@@ -1,4 +1,4 @@
-entity: bluedynamic
+entity: xxx
 method: grid
 name: mae_pretrain_vit_base_lft
 parameters:

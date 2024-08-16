@@ -1,4 +1,4 @@
-entity: bluedynamic
+entity: xxx
 method: random
 name: mae_pretrain_vit_base_fft
 parameters:

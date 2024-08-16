@@ -3,20 +3,20 @@ import wandb
 import pandas as pd
 api = wandb.Api()
 # 通过这些方式获取相应的值：run.id,run.name,run.tags,run.config,run.config.keys(),run.state,run.sweep,run.sweep.id
-# run = api.run("bluedynamic/MAE_COVID19/run_id") 获取指定的某个run
-# sweep_runs = api.sweep("bluedynamic/MAE_COVID19/sweep_id") 获取一个sweep中的所有run
-# runs = api.runs("bluedynamic/MAE_COVID19") 获取整个project中的所有run
+# run = api.run("xxx/MAE_COVID19/run_id") 获取指定的某个run
+# sweep_runs = api.sweep("xxx/MAE_COVID19/sweep_id") 获取一个sweep中的所有run
+# runs = api.runs("xxx/MAE_COVID19") 获取整个project中的所有run
 
-# wandb.init(project="MAE_COVID19_2", entity="bluedynamic")
+# wandb.init(project="MAE_COVID19_2", entity="xxx")
 # run_id = wandb.run.id
 # print(run_id)
 
 # # 或者
-# run = wandb.init(project="MAE_COVID19_2", entity="bluedynamic")
+# run = wandb.init(project="MAE_COVID19_2", entity="xxx")
 # run_id = run.id
 
 #----------
-runs = api.runs("bluedynamic/MAE_COVID19")
+runs = api.runs("xxx/MAE_COVID19")
 print(len(runs))
 for run in runs:
     # print(type(run.tags))
@@ -34,7 +34,7 @@ for run in runs:
         # run.update()
 
 #----------
-# runs = api.runs("bluedynamic/MAE_COVID19")
+# runs = api.runs("xxx/MAE_COVID19")
 # summary_list, config_list, name_list = [], [], []
 # for run in runs: 
 #     # .summary contains the output keys/values for metrics like accuracy.
@@ -57,7 +57,7 @@ for run in runs:
 # runs_df.to_csv("project.csv")
 
 #----------
-# sweep = api.sweep("bluedynamic/MAE_COVID19/762yqejn")
+# sweep = api.sweep("xxx/MAE_COVID19/762yqejn")
 # sweep_runs = sweep.runs
 # for run in sweep_runs:
 #     if run.config['finetune'] == '':

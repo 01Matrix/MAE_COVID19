@@ -1,7 +1,7 @@
 import wandb
 api = wandb.Api()
 
-sweep = api.sweep("bluedynamic/MAE_COVID19/a0sewpv6")
+sweep = api.sweep("xxx/MAE_COVID19/a0sewpv6")
 runs = sorted(sweep.runs,
   key=lambda run: run.summary.get("test_acc", 0), reverse=True)
 test_acc = runs[0].summary.get("test_acc", 0)

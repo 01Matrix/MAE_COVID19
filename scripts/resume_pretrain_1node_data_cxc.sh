@@ -14,4 +14,4 @@ OMP_NUM_THREADS=1 torchrun --nnodes=1 --nproc_per_node=2 main_pretrain.py \
                         --warmup_epochs 40 \
                         --model mae_vit_base_patch16 \
                         --dataset CXC \
-                        --resume /home/hwxiao/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
+                        --resume ./ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth

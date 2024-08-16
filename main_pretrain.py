@@ -255,7 +255,7 @@ if __name__ == '__main__':
     args = get_args_parser()
     args = args.parse_args()
     # wandb.login()
-    # wandb.init(config = args, project="MAE_COVID19_pretrain_jiuding", entity="bluedynamic", \
+    # wandb.init(config = args, project="MAE_COVID19_pretrain_jiuding", entity="xxx", \
     #         dir=args.output_dir, group="DDP",job_type=f"{args.jobtype}",settings=wandb.Settings(start_method='fork'))
     if args.model == 'mae_vit_base_patch16':
         TAG = 'base'

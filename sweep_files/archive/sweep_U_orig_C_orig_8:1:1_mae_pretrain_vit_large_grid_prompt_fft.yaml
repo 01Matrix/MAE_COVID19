@@ -1,4 +1,4 @@
-entity: bluedynamic
+entity: xxx
 method: grid
 name: sweep_U_orig_C_orig_8:1:1_mae_pretrain_vit_large_grid_prompt_fft
 parameters:

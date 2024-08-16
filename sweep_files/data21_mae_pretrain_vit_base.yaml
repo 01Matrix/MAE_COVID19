@@ -1,4 +1,4 @@
-entity: bluedynamic
+entity: xxx
 method: bayes
 metric: # 衡量目标
   goal: maximize
@@ -45,7 +45,7 @@ parameters:
     value: 42
   finetune:
     values:
-    - /home/hwxiao/medical_pretrained_models/MAE/data21_mae_pretrain_vit_base.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/data21_mae_pretrain_vit_base.pth
   split_ratio:
     values:
     # - '0.1:4.9:5'

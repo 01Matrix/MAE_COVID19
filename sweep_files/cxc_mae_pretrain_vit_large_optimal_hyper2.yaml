@@ -1,4 +1,4 @@
-entity: bluedynamic
+entity: xxx
 method: grid
 name: cxc_mae_pretrain_vit_large_optimal_hyper2
 parameters:
@@ -35,7 +35,7 @@ parameters:
     values: [0,1,2,3,4,5,6,7,8,9,10,42]
   finetune:
     values:
-    - /home/hwxiao/medical_pretrained_models/MAE/CXC_mae_pretrain_vit_large.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/CXC_mae_pretrain_vit_large.pth
 
   split_ratio:
     values:

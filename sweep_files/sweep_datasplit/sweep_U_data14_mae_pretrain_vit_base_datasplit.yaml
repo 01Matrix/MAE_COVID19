@@ -1,4 +1,4 @@
-entity: bluedynamic
+entity: xxx
 method: grid
 name: sweep_U_data14_mae_pretrain_vit_base_datasplit
 parameters:

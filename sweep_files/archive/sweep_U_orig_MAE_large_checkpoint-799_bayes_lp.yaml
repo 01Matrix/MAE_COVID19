@@ -1,4 +1,4 @@
-entity: bluedynamic
+entity: xxx
 method: grid
 metric: # 衡量目标
   goal: maximize

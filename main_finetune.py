@@ -448,7 +448,7 @@ def main(args):
     )
     
     if args.finetune and not args.test:
-        # pretrain_model_path = '/home/hwxiao/medical_pretrained_models/MAE'
+        # pretrain_model_path = './ckpts_dir/medical_pretrained_models/MAE'
         checkpoint = torch.load(args.finetune, map_location='cpu')
         logger.info("Load pretrained checkpoint from: %s" % args.finetune)
         if 'CXC_resumed_pretrain' in args.finetune or 'CXC_continual_' in args.finetune or 'data13_mae_pretrain' in args.finetune or 'data14_mae_pretrain' in args.finetune \
@@ -672,7 +672,7 @@ if __name__ == '__main__':
     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 
     # os.environ["WANDB_DIR"] = os.path.abspath(args.output_dir)
-    # run = wandb.init(config = args, project="MAE_COVID19_jiuding", entity="bluedynamic",dir=args.output_dir,settings=wandb.Settings(start_method="fork"))
+    # run = wandb.init(config = args, project="MAE_COVID19_jiuding", entity="xxx",dir=args.output_dir,settings=wandb.Settings(start_method="fork"))
 
     if not args.finetune:
         print('Train from scratch with ViT.')

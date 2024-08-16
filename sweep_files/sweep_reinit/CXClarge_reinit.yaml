@@ -1,4 +1,4 @@
-entity: bluedynamic
+entity: xxx
 method: grid
 name: sweep_U_CXC_ft_IN1K_mae_pretrain_vit_large_reinit
 parameters:

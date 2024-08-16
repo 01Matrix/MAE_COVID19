@@ -1,4 +1,4 @@
-entity: bluedynamic
+entity: xxx
 method: random
 name: C_SI_orig_8.5:1:0.5_mae_pretrain_vit_base
 parameters:
