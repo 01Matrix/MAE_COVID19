@@ -14,4 +14,4 @@ OMP_NUM_THREADS=1 torchrun --nnodes=1 --nproc_per_node=2 main_pretrain.py \
                         --warmup_epochs 40 \
                         --model mae_vit_large_patch16 \
                         --dataset DL \
-                        --resume /sharefs/healthshare/xiaohongwang/MAE_COVID19_output/output_pretrain/large_DL_pretrain/checkpoint-160.pth
+                        --resume ./MAE_COVID19_output/output_pretrain/large_DL_pretrain/checkpoint-160.pth
