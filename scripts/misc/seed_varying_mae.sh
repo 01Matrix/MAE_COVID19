@@ -1,18 +1,12 @@
 #!/bin/bash
 
-ln -s /mnt/sfs_turbo/hxiao/.conda/envs/torch1.8 /opt/conda/envs/
-source activate
-conda activate torch1.8
-cd /mnt/sfs_turbo/hxiao/codes/MAE_COVID19/
-chmod -R 777 /mnt/sfs_turbo/hxiao/codes/MAE_COVID19
-
 # python main_finetune_ddp.py --finetune \
-# /mnt/sfs_turbo/medical_pretrained_models/MAE/mae_finetuned_vit_base.pth --tar U_sani2 --seed 42 \
+# ./ckpts_dir/medical_pretrained_models/MAE/mae_finetuned_vit_base.pth --tar U_sani2 --seed 42 \
 # --layer_decay 0.65 --weight_decay 0.05 --drop_path 0.1 --reprob 0.25 --mixup 0.8 --cutmix 1.0
 
-finetune='/mnt/sfs_turbo/medical_pretrained_models/MAE/mae_finetuned_vit_base.pth'
-# finetune='/mnt/sfs_turbo/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth'
-# finetune='/mnt/sfs_turbo/medical_pretrained_models/MAE/C1000_pretrain_checkpoint_799.pth'
+finetune='./ckpts_dir/medical_pretrained_models/MAE/mae_finetuned_vit_base.pth'
+# finetune='./ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth'
+# finetune='./ckpts_dir/medical_pretrained_models/MAE/C1000_pretrain_checkpoint_799.pth'
 model='vit_base_patch16'
 batch_size=16
 dataset=U_sani2

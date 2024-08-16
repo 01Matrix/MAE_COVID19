@@ -11,8 +11,8 @@ torch.manual_seed(42)
 covid_img_paths = []
 non_covid_img_paths = []
 
-covid_path = '/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/UCSD-AI4H-COVID-CT-data/Images-processed/U_sani/COVID'
-non_covid_path = '/mnt/sfs_turbo/public_medical_images/datasets/selected4finetune/UCSD-AI4H-COVID-CT-data/Images-processed/U_sani/non-COVID'
+covid_path = './data_dir/public_medical_images/selected4finetune/UCSD-AI4H-COVID-CT-data/Images-processed/U_sani/COVID'
+non_covid_path = './data_dir/public_medical_images/selected4finetune/UCSD-AI4H-COVID-CT-data/Images-processed/U_sani/non-COVID'
 
 
 
@@ -38,9 +38,4 @@ def copy_file(path_list, target_dir):
         file_name = path.split('/')[-1]
         shutil.copyfile(path, os.path.join(target_dir, file_name))
 
-copy_file(covid_train_set, '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/U_sani_235/train/COVID')
-copy_file(non_covid_train_set, '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/U_sani_235/train/non_COVID')
-copy_file(covid_val_set, '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/U_sani_235/val/COVID')
-copy_file(non_covid_val_set, '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/U_sani_235/val/non_COVID')
-copy_file(covid_test_set, '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/U_sani_235/test/COVID')
-copy_file(non_covid_test_set, '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/U_sani_235/test/non_COVID')
+

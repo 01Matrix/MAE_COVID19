@@ -82,9 +82,9 @@ def run_one_image(img, model):
 
 if __name__ == '__main__':    
 
-    # root_dir = '/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID-19-20_v2/data/nii2png'
-    root_dir = '/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID19-CT-Dataset1000+/data/dcm2png'
-    # root_dir = '/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_sani2'
+    # root_dir = './data_dir/public_medical_images/selected4pretrain/COVID-CT/COVID-19-20_v2/data/nii2png'
+    root_dir = './data_dir/public_medical_images/selected4pretrain/COVID-CT/COVID19-CT-Dataset1000+/data/dcm2png'
+    # root_dir = './data_dir/public_medical_images/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_sani2'
     class_dirs = os.listdir(root_dir)
     mean, std = 0, 0
     count = 0
@@ -107,9 +107,9 @@ if __name__ == '__main__':
     # imagenet_mean = np.array([0.3320]) #0.3320 #0.6240
     # imagenet_std = np.array([0.3341])  #0.3341 #0.3080
 
-    img = Image.open('/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID19-CT-Dataset1000+/data/dcm2png/Subject (1)/Mediastinum_150.png').convert('RGB')
-    # img = Image.open('/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4pretrain/COVID-CT/COVID-19-20_v2/data/nii2png/volume-covid19-A-0003_116.png').convert('RGB')
-    # img = Image.open('/sharefs/baaihealth/public_datasets/public_medical_images/datasets/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_sani2/COVID/kjr-21-e25-p1-10.png').convert('RGB')
+    img = Image.open('./data_dir/public_medical_images/selected4pretrain/COVID-CT/COVID19-CT-Dataset1000+/data/dcm2png/Subject (1)/Mediastinum_150.png').convert('RGB')
+    # img = Image.open('./data_dir/public_medical_images/selected4pretrain/COVID-CT/COVID-19-20_v2/data/nii2png/volume-covid19-A-0003_116.png').convert('RGB')
+    # img = Image.open('./data_dir/public_medical_images/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_sani2/COVID/kjr-21-e25-p1-10.png').convert('RGB')
     print(np.array(img).shape)
     # print(np.array(img))
     img = img.resize((224, 224))
