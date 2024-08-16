@@ -1,7 +1,5 @@
 ## Fine-tuning Pre-trained MAE for Medical Image Classification
 
-### Evaluation
-
 ### Fine-tuning
 
 Get our pre-trained checkpoints from [here](README.md#pre-training-recipes).
@@ -54,7 +52,7 @@ vit_base   --blr 0.0029628906306211466 --cutmix 0.2463813127293306 --drop_path 0
 
 vit_large  --blr 0.005662050315933436 --cutmix 0.48801002523621617 --drop_path 0.03626496567656723 --layer_decay 0.7540216457239383 --mixup 0.55574615930789 --reprob 0.05080341932073407 --weight_decay 0.4492555267595793 # this is the hyperparameters searched via W&B Sweeps for vit_large
 ```
-* W&B Sweeps helps to automate hyperparameter search and visualize rich, interactive experiment tracking. Pick from popular search methods such as Bayesian, grid search, and random to search the hyperparameter space. Scale and parallelize sweep across one or more machines. For more details, please refer to [W&B Sweeps](https://docs.wandb.ai/guides/sweeps).
+* W&B Sweeps help to automate hyperparameter search and visualize rich, interactive experiment tracking. Pick from popular search methods such as Bayesian, grid search, and random to search the hyperparameter space. Scale and parallelize sweep across one or more machines. For more details, please refer to [W&B Sweeps](https://docs.wandb.ai/guides/sweeps). The Sweeps config files can be found in [sweep_files](#sweep_files) folder.
 
 To start training:
 ```
