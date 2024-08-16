@@ -1,15 +1,6 @@
 #!/bin/bash
 
-# # for health
-# mkdir /home/hwxiao/soft_link_health
-# ln -s /home/hwxiao/soft_link_health /sharefs/baaihealth/xiaohongwang/mycodes/MAE_COVID19 
-# ln -s /sharefs/baaihealth/xiaohongwang/MAE_COVID19_output /home/hwxiao/soft_link_health
-# ln -s /sharefs/baaihealth/xiaohongwang/MAE_COVID19_output/wandb /home/hwxiao/soft_link_health
 
-# # for share
-# mkdir /home/hwxiao/soft_link_health
-# ln -s /sharefs/healthshare/xiaohongwang/MAE_COVID19_output /home/hwxiao/soft_link_health
-# ln -s /sharefs/healthshare/xiaohongwang/MAE_COVID19_output/wandb /home/hwxiao/soft_link_health
 MASTER_ADDR=172.24.65.4
 model_size=large
 model_name=mae_vit_${model_size}_patch16
