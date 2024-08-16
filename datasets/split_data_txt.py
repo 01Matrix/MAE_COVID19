@@ -11,8 +11,8 @@ torch.manual_seed(42)
 covid_img_paths = []
 non_covid_img_paths = []
 
-covid_txt_path = '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/C_orig/COVID.txt'
-non_covid_txt_path = '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/C_orig/non-COVID.txt'
+covid_txt_path = './data_dir/public_medical_images/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_orig/COVID.txt'
+non_covid_txt_path = './data_dir/public_medical_images/selected4finetune/UCSD_AI4H_COVID_CT_data/Images-processed/U_orig/non-COVID.txt'
 
 fh = open(covid_txt_path, 'r')  #读取文件
 for line in fh:
@@ -42,6 +42,6 @@ def create_data_txt(path_list, target_path):
             f.writelines(ph+'\n')
     
 
-create_data_txt(covid_train_set + non_covid_train_set, '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/C_orig/train.txt')
-create_data_txt(covid_val_set + non_covid_val_set, '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/C_orig/val.txt')
-create_data_txt(covid_test_set + non_covid_test_set, '/mnt/sfs_turbo/jiaoxianfeng/code/ssl-pretrain/mae/datasets/C_orig/test.txt')
+create_data_txt(covid_train_set + non_covid_train_set, 'train.txt')
+create_data_txt(covid_val_set + non_covid_val_set, 'val.txt')
+create_data_txt(covid_test_set + non_covid_test_set, 'test.txt')

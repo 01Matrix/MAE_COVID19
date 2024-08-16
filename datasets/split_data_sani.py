@@ -14,8 +14,6 @@ non_covid_img_paths = []
 covid_path = './data_dir/public_medical_images/selected4finetune/UCSD-AI4H-COVID-CT-data/Images-processed/U_sani/COVID'
 non_covid_path = './data_dir/public_medical_images/selected4finetune/UCSD-AI4H-COVID-CT-data/Images-processed/U_sani/non-COVID'
 
-
-
 covid_img_paths = glob.glob(os.path.join(covid_path, '*.*'))
 non_covid_img_paths = glob.glob(os.path.join(non_covid_path, '*.*'))
 
