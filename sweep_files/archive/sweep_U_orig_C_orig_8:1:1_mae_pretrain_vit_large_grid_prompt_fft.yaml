@@ -40,8 +40,8 @@ parameters:
     value: 42
   finetune:
     values:
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_MAE_checkpoint_799.pth
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_large.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/C_orig_MAE_checkpoint_799.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_large.pth
   # block_list:
   #   values:
   #   - '23'

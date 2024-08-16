@@ -21,7 +21,7 @@ parameters:
   finetune:
     values:
     # - ''
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
   layer_decay:
     distribution: uniform
     max: 1

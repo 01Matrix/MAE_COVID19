@@ -21,7 +21,7 @@ parameters:
   finetune:
     values:
     # - ''
-    - /sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain/C_orig_pretrain/checkpoint-1399.pth
+    - ./MAE_COVID19_output_pretrain/C_orig_pretrain/checkpoint-1399.pth
   layer_decay:
     distribution: uniform
     max: 1

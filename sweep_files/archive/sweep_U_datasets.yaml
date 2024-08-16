@@ -15,19 +15,19 @@ parameters:
   finetune:
     values: 
     - ''
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_SI_orig_8.5:1:0.5_mae_pretrain_vit_base.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/SI_orig_8.5:1:0.5_mae_pretrain_vit_base.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_finetuned_vit_base.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_finetuned_vit_large.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_large.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_imagenet1k_c_covid_sl_400.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_MAE_checkpoint_799.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C1000_MAE_checkpoint_799.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C1000_C_orig_MAE_checkpoint-799.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_model_resumed_pretrain_from_mae_pretrain_vit_base.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_model_resumed_pretrain_from_mae_pretrain_vit_base_freeze200.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/C_SI_orig_8.5:1:0.5_mae_pretrain_vit_base.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/SI_orig_8.5:1:0.5_mae_pretrain_vit_base.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/mae_finetuned_vit_base.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/mae_finetuned_vit_large.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_large.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/mae_imagenet1k_c_covid_sl_400.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/C_orig_MAE_checkpoint_799.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/C1000_MAE_checkpoint_799.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/C1000_C_orig_MAE_checkpoint-799.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/C_model_resumed_pretrain_from_mae_pretrain_vit_base.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/C_model_resumed_pretrain_from_mae_pretrain_vit_base_freeze200.pth
   layer_decay:
     value: 0.7427
   mixup:

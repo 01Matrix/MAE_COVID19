@@ -127,7 +127,7 @@ def get_args_parser():
                         help='Use class token instead of global pool for classification')
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='/share/project/xiaohongwang/public_medical_images', type=str,
+    parser.add_argument('--data_path', default='./data_dir/public_medical_images', type=str,
                         help='dataset path')
     parser.add_argument('--split_ratio',default='2:3:5',type=str,help='Split dataset to train:val:test')
     parser.add_argument('--tar', type=str, default='U_orig', help='finetune data')

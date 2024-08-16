@@ -19,7 +19,7 @@ parameters:
     max: 1
     min: 0
   finetune:
-    value: /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_SI_orig_8.5:1:0.5_mae_pretrain_vit_base.pth
+    value: ./ckpts_dir/medical_pretrained_models/MAE/C_SI_orig_8.5:1:0.5_mae_pretrain_vit_base.pth
   layer_decay:
     distribution: uniform
     max: 1

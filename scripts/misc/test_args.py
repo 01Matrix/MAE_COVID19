@@ -91,7 +91,7 @@ def get_args_parser():
     parser.add_argument('--nb_classes', default=2, type=int,
                         help='number of the classification types')
 
-    parser.add_argument('--output_dir', default='/sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_finetune',
+    parser.add_argument('--output_dir', default='./MAE_COVID19_output_finetune',
                         help='path where to save, empty for no saving')
     parser.add_argument('--log_dir', default='',
                         help='path where to tensorboard log')

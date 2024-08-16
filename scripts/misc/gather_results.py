@@ -7,8 +7,8 @@ import csv
 from glob import glob
 
 
-# log_list = glob('/sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_finetune/2:3:5/finetune_with_mae_pretrain_vit_base/*/*.txt')
-log_list = glob('/sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_finetune/2:3:5/finetune_with_mae_finetuned_vit_base/U_sani2_seed*/log.txt')
+# log_list = glob('./MAE_COVID19_output_finetune/2:3:5/finetune_with_mae_pretrain_vit_base/*/*.txt')
+log_list = glob('./MAE_COVID19_output_finetune/2:3:5/finetune_with_mae_finetuned_vit_base/U_sani2_seed*/log.txt')
 
 result_list=[]
 for log in log_list:

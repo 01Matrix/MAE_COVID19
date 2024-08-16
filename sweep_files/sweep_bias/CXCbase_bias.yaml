@@ -42,7 +42,7 @@ parameters:
     value: 42
   finetune:
     values:
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth
   attn:
     value: false
   mlp:

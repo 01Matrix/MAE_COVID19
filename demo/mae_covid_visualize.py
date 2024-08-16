@@ -124,15 +124,15 @@ if __name__ == '__main__':
     # show_image(torch.tensor(img))
 
 
-    # chkpt_dir = '/sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth'
-    # chkpt_dir = '/sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_finetuned_vit_base.pth'
-    # chkpt_dir = '/sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth'
-    # chkpt_dir = '/sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_MAE_checkpoint_799.pth'
-    # chkpt_dir = '/sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C1000_C_orig_MAE_checkpoint-799.pth'
-    # chkpt_dir = '/sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C1000_MAE_checkpoint_799.pth'
-    chkpt_dir = '/sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain/base_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-799.pth'
+    # chkpt_dir = './ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth'
+    # chkpt_dir = './ckpts_dir/medical_pretrained_models/MAE/mae_finetuned_vit_base.pth'
+    # chkpt_dir = './ckpts_dir/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth'
+    # chkpt_dir = './ckpts_dir/medical_pretrained_models/MAE/C_orig_MAE_checkpoint_799.pth'
+    # chkpt_dir = './ckpts_dir/medical_pretrained_models/MAE/C1000_C_orig_MAE_checkpoint-799.pth'
+    # chkpt_dir = './ckpts_dir/medical_pretrained_models/MAE/C1000_MAE_checkpoint_799.pth'
+    chkpt_dir = './MAE_COVID19_output_pretrain/base_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-799.pth'
     model_mae = prepare_model(chkpt_dir, 'mae_vit_base_patch16')
-    # chkpt_dir = '/sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain/large_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-799.pth'
+    # chkpt_dir = './MAE_COVID19_output_pretrain/large_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-799.pth'
     # model_mae = prepare_model(chkpt_dir, 'mae_vit_large_patch16')
     print('Model loaded.')
 

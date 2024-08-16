@@ -50,7 +50,7 @@ parameters:
     # - 1000000
   finetune:
     values:
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_large.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_large.pth
   fft:
     value: true
   attn:

@@ -45,7 +45,7 @@ parameters:
     value: 42
   finetune:
     values:
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_tfs_vit_large.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/C_orig_tfs_vit_large.pth
   split_ratio:
     values:
     # - '0.1:4.9:5'

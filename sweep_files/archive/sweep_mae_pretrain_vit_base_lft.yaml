@@ -24,8 +24,8 @@ parameters:
     value: 42
   finetune:
     values:
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
-    # - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_large.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
+    # - ./ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_large.pth
   block_list:
     values:
     - ''

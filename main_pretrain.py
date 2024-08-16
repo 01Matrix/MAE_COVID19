@@ -80,7 +80,7 @@ def get_args_parser():
                         help='epochs to warmup LR')
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='/share/project/xiaohongwang/public_medical_images', type=str,help='dataset path')
+    parser.add_argument('--data_path', default='./data_dir/public_medical_images', type=str,help='dataset path')
     parser.add_argument('--dataset', type=str, nargs='+', help='pretrain dataset list')
 
     parser.add_argument('--output_dir', default='/home/hwxiao/mycodes/MAE_COVID19/outputs',

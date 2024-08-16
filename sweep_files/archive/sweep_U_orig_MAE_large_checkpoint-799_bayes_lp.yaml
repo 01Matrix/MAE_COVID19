@@ -13,12 +13,12 @@ parameters:
     value: 0.1
   finetune:
     values: 
-    - /sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain/large_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-799.pth
-    - /sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain/base_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-799.pth
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_large.pth
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_large.pth
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth
+    - ./MAE_COVID19_output_pretrain/large_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-799.pth
+    - ./MAE_COVID19_output_pretrain/base_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-799.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_large.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/mae_pretrain_vit_base.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_large.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/C_orig_8:1:1_mae_pretrain_vit_base.pth
   seed:
     value: 42
   # block_list:

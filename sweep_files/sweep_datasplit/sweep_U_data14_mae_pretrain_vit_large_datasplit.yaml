@@ -42,7 +42,7 @@ parameters:
     value: 42
   finetune:
     values:
-    - /sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain/large_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-799.pth
+    - ./MAE_COVID19_output_pretrain/large_CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-799.pth
   fft:
     value: true
   attn:

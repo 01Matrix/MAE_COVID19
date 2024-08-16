@@ -24,7 +24,7 @@ parameters:
     value: 42
   finetune:
     values:
-    - /sharefs/baaihealth/xiaohongwang/medical_pretrained_models/MAE/C_orig_MAE_checkpoint_799.pth
+    - ./ckpts_dir/medical_pretrained_models/MAE/C_orig_MAE_checkpoint_799.pth
   block_list:
     values:
     - ''

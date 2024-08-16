@@ -24,7 +24,7 @@ parameters:
   finetune:
     values:
     # - ''
-    - /sharefs/baaihealth/xiaohongwang/MAE_COVID19/output_pretrain/CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-420.pth
+    - ./MAE_COVID19_output_pretrain/CHE_CCT_C1920_CAR_CCS_C1000_CIC_MRA_MRB_S_orig_SIRM_C_orig_L_orig_CC_orig_pretrain/checkpoint-420.pth
   layer_decay:
     distribution: uniform
     max: 1
