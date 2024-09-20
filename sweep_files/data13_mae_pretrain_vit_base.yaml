@@ -50,4 +50,4 @@ parameters:
     values:
     - '2.0:3.0:5'
 program: main_finetune_ddp.py
-project: MAE_COVID19_jiuding
+project: MAE_COVID19

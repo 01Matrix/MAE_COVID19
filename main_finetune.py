@@ -672,7 +672,7 @@ if __name__ == '__main__':
     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 
     # os.environ["WANDB_DIR"] = os.path.abspath(args.output_dir)
-    # run = wandb.init(config = args, project="MAE_COVID19_jiuding", entity="xxx",dir=args.output_dir,settings=wandb.Settings(start_method="fork"))
+    # run = wandb.init(config = args, project="MAE_COVID19", entity="xxx",dir=args.output_dir,settings=wandb.Settings(start_method="fork"))
 
     if not args.finetune:
         print('Train from scratch with ViT.')

@@ -107,4 +107,4 @@ parameters:
     # - '5.7:1.6:2.7'
     # - '6.2:1.2:2.6'
 program: main_finetune_ddp.py
-project: MAE_COVID19_jiuding
+project: MAE_COVID19
