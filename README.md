@@ -334,5 +334,5 @@ Results of full fine-tuning of different MAE models on U_orig and U_sani across 
 * This project is under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for details.
 
 ## Acknowledgement
-* This repo is adapted from the [MAE](https://github.com/facebookresearch/mae) repo.
-* This repo is based on a PyTorch Image Models library [timm](https://github.com/huggingface/pytorch-image-models).
+* Codes of this repo were adapted from the [MAE](https://github.com/facebookresearch/mae) repo.
+* This repo was based on a PyTorch Image Models library [timm](https://github.com/huggingface/pytorch-image-models).
